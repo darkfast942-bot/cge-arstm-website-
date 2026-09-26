@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>CGE ARSTM — Portail Admin & Supabase</title>
+<title>CGE ARSTM — Portail Admin & Supabase (Liquid Glass)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800;900&display=swap" rel="stylesheet">
@@ -11,7 +11,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
-<!-- Client Supabase JS CDN -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
@@ -29,20 +28,57 @@
 <style>
   :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
   html { scroll-padding-top: env(safe-area-inset-top, 0px); }
-  body { margin:0; background:#FDFBF6; }
+  body { 
+    margin: 0; 
+    background: radial-gradient(circle at 50% 0%, #fff7ed 0%, #fef3c7 40%, #fdfbf6 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+
+  /* Effet Liquid Glass */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+
+  .glass-dock {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(25px) saturate(200%);
+    -webkit-backdrop-filter: blur(25px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 30px 60px rgba(234, 88, 12, 0.12), 0 10px 25px rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.9);
+  }
+
+  .liquid-pill {
+    background: linear-gradient(135deg, rgba(234, 88, 12, 0.9) 0%, rgba(249, 115, 22, 0.85) 100%);
+    box-shadow: 0 8px 20px rgba(234, 88, 12, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Animations de survol */
+  .hover-scale {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+  }
+  .hover-scale:hover {
+    transform: translateY(-4px) scale(1.04);
+  }
+
   @keyframes gentle-bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
   .animate-bounce { animation: gentle-bounce 1.4s ease-in-out infinite; }
 </style>
 </head>
-<body>
+<body className="pb-32">
 <div id="root"></div>
 <script type="text/babel" data-presets="react">
-const { useState, useEffect } = React;
+const { useState, useEffect, useRef } = React;
 
 // Configuration Supabase
 const SUPABASE_URL = "https://vpzxsksbzzbncqawzium.supabase.co";
-// Remplacez la clé ci-dessous par votre clé anon (dans Supabase : Project Settings > API)
-const SUPABASE_ANON_KEY = "sb_publishable_Or7mvR3xPajlOzxFZdV1XQ_j3jvr5Vm";
+const SUPABASE_ANON_KEY = "sb_publishable_Or7mvR3xPajl0zxFZdV1XQ_j3jvr..."; 
 const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
 const Icon = ({ children, className = "w-5 h-5" }) => (
@@ -59,16 +95,13 @@ const ImgIcon = (p) => <Icon {...p}><rect x="3" y="4" width="18" height="16" rx=
 const FileText = (p) => <Icon {...p}><path d="M7 3h7l5 5v13H7Z" /><path d="M14 3v5h5" /><path d="M9.5 13h6M9.5 16.5h6" /></Icon>;
 const MessageSquare = (p) => <Icon {...p}><path d="M4 4h16v12H8l-4 4Z" /></Icon>;
 const Mail = (p) => <Icon {...p}><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3.5 6.5 12 13l8.5-6.5" /></Icon>;
-const Lock = (p) => <Icon {...p}><rect x="4.5" y="10.5" width="15" height="10" rx="2" /><path d="M7.5 10.5V7a4.5 4.5 0 0 1 9 0v3.5" /></Icon>;
 const UserCheck = (p) => <Icon {...p}><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6" /><path d="M16.5 12.5 18.5 14.5 22 10.5" /></Icon>;
 const ShieldCheck = (p) => <Icon {...p}><path d="M12 3l7 3v6c0 4.8-3 8-7 9-4-1-7-4.2-7-9V6Z" /><path d="M9 12l2 2 4-4.5" /></Icon>;
 const Search = (p) => <Icon {...p}><circle cx="10.5" cy="10.5" r="6.5" /><path d="M20 20l-4.8-4.8" /></Icon>;
 const Download = (p) => <Icon {...p}><path d="M12 3v12" /><path d="M7 10l5 5 5-5" /><path d="M4 20h16" /></Icon>;
-const Plus = (p) => <Icon {...p}><path d="M12 4v16M4 12h16" /></Icon>;
 const Trash2 = (p) => <Icon {...p}><path d="M4 7h16" /><path d="M9 7V4.5h6V7" /><path d="M6 7l1 13h10l1-13" /><path d="M10 11v6M14 11v6" /></Icon>;
 const CheckCircle = (p) => <Icon {...p}><circle cx="12" cy="12" r="9" /><path d="M8 12.5l2.5 2.5L16 9.5" /></Icon>;
 const X = (p) => <Icon {...p}><path d="M5 5l14 14M19 5 5 19" /></Icon>;
-const Menu = (p) => <Icon {...p}><path d="M4 6h16M4 12h16M4 18h16" /></Icon>;
 const ChevronRight = (p) => <Icon {...p}><path d="M9 5l7 7-7 7" /></Icon>;
 const Heart = (p) => <Icon {...p}><path d="M12 20.5s-7.5-4.7-9.7-9.3C.7 7.7 2.4 4.5 5.6 4c2-.3 3.7.7 4.4 2 .7-1.3 2.4-2.3 4.4-2 3.2.5 4.9 3.7 3.3 7.2C19.5 15.8 12 20.5 12 20.5Z" /></Icon>;
 const Key = (p) => <Icon {...p}><circle cx="8" cy="8" r="4" /><path d="M11 11l9 9" /><path d="M15.5 15.5l2.5-2.5M18.5 18.5l2-2" /></Icon>;
@@ -76,7 +109,6 @@ const Building = (p) => <Icon {...p}><rect x="5" y="3" width="14" height="18" rx
 const MapPin = (p) => <Icon {...p}><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21Z" /><circle cx="12" cy="9.5" r="2.3" /></Icon>;
 const Send = (p) => <Icon {...p}><path d="M4 11l16-7-6.5 16-2.8-6.7L4 11Z" /></Icon>;
 const LogOut = (p) => <Icon {...p}><path d="M9 4H5.5A1.5 1.5 0 0 0 4 5.5v13A1.5 1.5 0 0 0 5.5 20H9" /><path d="M14 16l4-4-4-4" /><path d="M18 12H9" /></Icon>;
-const Edit = (p) => <Icon {...p}><path d="M4 20h4l11-11-4-4L4 16Z" /><path d="M13 6.5l4 4" /></Icon>;
 const RefreshCw = (p) => <Icon {...p}><path d="M4 11a8 8 0 0 1 14-4.5L21 9" /><path d="M21 4v5h-5" /><path d="M20 13a8 8 0 0 1-14 4.5L3 15" /><path d="M3 20v-5h5" /></Icon>;
 const Sparkles = (p) => <Icon {...p}><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6Z" /><path d="M19 15l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7Z" /></Icon>;
 const Image = ImgIcon;
@@ -111,88 +143,9 @@ const ADMIN_ACCOUNTS = [
   { login: "ARSTM-BUR-12", name: "Administrateur adjoint", hash: "f68af661f19d260c6173cb44acbe4485d42d394d72ca695e485d82ad8a1d250d" }
 ];
 
-const MediaStore = {
-  open() {
-    return new Promise((res, rej) => {
-      const r = indexedDB.open("cge-arstm-media", 1);
-      r.onupgradeneeded = () => r.result.createObjectStore("photos", { keyPath: "id" });
-      r.onsuccess = () => res(r.result);
-      r.onerror = () => rej(r.error);
-    });
-  },
-  async all() {
-    const db = await this.open();
-    return new Promise((res, rej) => {
-      const q = db.transaction("photos").objectStore("photos").getAll();
-      q.onsuccess = () => res(q.result.sort((a, b) => b.ts - a.ts));
-      q.onerror = () => rej(q.error);
-    });
-  },
-  async add(item) {
-    const db = await this.open();
-    return new Promise((res, rej) => {
-      const t = db.transaction("photos", "readwrite");
-      t.objectStore("photos").put(item);
-      t.oncomplete = () => res();
-      t.onerror = () => rej(t.error);
-    });
-  },
-  async remove(id) {
-    const db = await this.open();
-    return new Promise((res, rej) => {
-      const t = db.transaction("photos", "readwrite");
-      t.objectStore("photos").delete(id);
-      t.oncomplete = () => res();
-      t.onerror = () => rej(t.error);
-    });
-  }
-};
-
-const fileToDataUrl = (file) => new Promise((resolve, reject) => {
-  const reader = new FileReader();
-  reader.onerror = () => reject(reader.error);
-  reader.onload = () => {
-    const img = new Image();
-    img.onerror = () => reject(new Error("image"));
-    img.onload = () => {
-      const k = Math.min(1, 900 / Math.max(img.width, img.height));
-      const c = document.createElement("canvas");
-      c.width = Math.round(img.width * k);
-      c.height = Math.round(img.height * k);
-      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
-      resolve(c.toDataURL("image/jpeg", 0.82));
-    };
-    img.src = reader.result;
-  };
-  reader.readAsDataURL(file);
-});
-
-const PhotoPicker = ({ value, onChange, openLibrary, placeholder }) => {
-  const isData = value.startsWith("data:");
-  return (
-    <div className="flex items-center gap-2">
-      {value && <img src={value} alt="" className="w-11 h-11 rounded-lg object-cover border border-stone-200" />}
-      <input
-        type="text"
-        placeholder={isData ? "Photo choisie ✓" : placeholder}
-        value={isData ? "" : value}
-        onChange={(e) => onChange(e.target.value)}
-        className="min-w-0 flex-1 p-3 rounded-xl border border-stone-200 bg-white text-sm"
-      />
-      <button
-        type="button"
-        onClick={() => openLibrary(onChange)}
-        className="shrink-0 px-3 py-3 rounded-xl bg-stone-900 text-white text-xs font-semibold hover:bg-stone-700 transition"
-      >
-        Mes photos
-      </button>
-    </div>
-  );
-};
-
 const initialMembers = [
   { id: 1, matricule: "2026-ARSTM-01", pinHash: "6291f028f1dd63958e289eb48a812be5a997958f97775d80c2ef24b2c8f9185a", name: "KALOGA Mouhammad Islâm", role: "Président Général", bio: "Élève ingénieur en électromécanique navale, passionné par l'innovation maritime.", image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400" },
-  { id: 2, matricule: "2026-ARSTM-02", pinHash: "ff4a96663bbafdc1b833c95963ed7a158b5e9fefaa722e6b63f079bd7a706a62", name: "DOSSO Salimata", role: "Vice-Présidents", bio: "Étudiante en Gestion Logistique & Transport, engagée pour l'excellence académique.", image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400" },
+  { id: 2, matricule: "2026-ARSTM-02", pinHash: "ff4a96663bbafdc1b833c95963ed7a158b5e9fefaa722e6b63f079bd7a706a62", name: "DOSSO Salimata", role: "Vice-Présidente", bio: "Étudiante en Gestion Logistique & Transport, engagée pour l'excellence académique.", image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400" },
   { id: 3, matricule: "2026-ARSTM-03", pinHash: "d71efcad41a0e418c44cb8d544de1e5cd4f407ec33ca50a43218cc2af3d5d863", name: "KOUASSI Jean-Eric", role: "Secrétaire Général", bio: "Élève Officier Mécanicien, passionné par la transition énergétique portuaire.", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400" },
 ];
 
@@ -207,20 +160,20 @@ const initialJobs = [
 ];
 
 const initialAlumni = [
-  { id: 1, name: "KOUAME Jean-Philippe", promo: "2023", role: "Second Officière Mécanicien", company: "Bourbon Offshore", matricule: "2023-ARSTM-89" },
+  { id: 1, name: "KOUAME Jean-Philippe", promo: "2023", role: "Second Officier Mécanicien", company: "Bourbon Offshore", matricule: "2023-ARSTM-89" },
   { id: 2, name: "TIEHI Nadège", promo: "2024", role: "Ingénieure QSHE Portuaire", company: "San Pedro Container Terminal", matricule: "2024-ARSTM-12" },
   { id: 3, name: "YAO Hermann", promo: "2022", role: "Responsable Logistique Bâtiment", company: "CMA CGM Côte d'Ivoire", matricule: "2022-ARSTM-05" }
 ];
 
 const initialGallery = [
   { id: 1, title: "Cérémonie de Remise des Galons", category: "Événements", image: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&q=80&w=600" },
-  { id: 2, title: "Atelier Pratique en Simulatuer Naval", category: "Formation", image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=80&w=600" },
+  { id: 2, title: "Atelier Pratique en Simulateur Naval", category: "Formation", image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=80&w=600" },
   { id: 3, title: "Journée Sportive Inter-Filières", category: "Vie Étudiante", image: "https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&q=80&w=600" }
 ];
 
 function App() {
   const [activeTab, setActiveTab] = useState('accueil');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [hoveredTab, setHoveredTab] = useState(null);
   const [toast, setToast] = useState(null);
 
   // Auth States
@@ -232,12 +185,10 @@ function App() {
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [lockUntil, setLockUntil] = useState(0);
   const [tempPinInfo, setTempPinInfo] = useState(null);
-  const [photos, setPhotos] = useState([]);
-  const [picker, setPicker] = useState(null);
-  const [uploading, setUploading] = useState(false);
 
-  // Change PIN modal state
-  const [newPinInput, setNewPinInput] = useState('');
+  // Pillar animation positioning ref
+  const navRef = useRef(null);
+  const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, opacity: 0 });
 
   // Data Stores
   const [members, setMembers] = useState(initialMembers);
@@ -245,737 +196,149 @@ function App() {
   const [jobs, setJobs] = useState(initialJobs);
   const [alumni, setAlumni] = useState(initialAlumni);
   const [gallery, setGallery] = useState(initialGallery);
-  const [quickLinks, setQuickLinks] = useState([
-    { id: 'bureau', label: 'Bureau Executif', desc: 'Découvrir les membres', icon: Users, color: 'bg-orange-50 text-orange-800 border-orange-200' },
-    { id: 'emplois', label: 'Offres & Stages', desc: 'Opportunités de carrière', icon: Briefcase, color: 'bg-amber-50 text-amber-800 border-amber-200' },
-    { id: 'activites', label: 'Activités & Projets', desc: 'Événements & ateliers', icon: Calendar, color: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
-    { id: 'alumni', label: 'Réseau Alumni', desc: 'Annuaire des diplômés', icon: GraduationCap, color: 'bg-blue-50 text-blue-800 border-blue-200' },
-    { id: 'mediatheque', label: 'Médiathèque', desc: 'Galerie photos & vidéos', icon: Image, color: 'bg-indigo-50 text-indigo-800 border-indigo-200' },
-    { id: 'reglement', label: 'Règlement Intérieur', desc: 'Textes et chartes', icon: FileText, color: 'bg-stone-100 text-stone-800 border-stone-200' },
-    { id: 'suggestions', label: 'Boîte à Suggestions', desc: 'Exprimez-vous librement', icon: MessageSquare, color: 'bg-purple-50 text-purple-800 border-purple-200' },
-    { id: 'contact', label: 'Contact', desc: 'Nous joindre', icon: Mail, color: 'bg-rose-50 text-rose-800 border-rose-200' },
-  ]);
   const [suggestions, setSuggestions] = useState([
     { id: 1, date: "20/09/2026", text: "Organiser une journée portes ouvertes pour le mentorat des nouveaux étudiants." }
   ]);
 
-  // Form Inputs pour la gestion Admin
-  const [newMemberForm, setNewMemberForm] = useState({ name: '', role: '', matricule: '', bio: '', image: '' });
-  const [newNewsForm, setNewNewsForm] = useState({ title: '', content: '', date: '' });
-  const [newJobForm, setNewJobForm] = useState({ title: '', company: '', type: 'Stage', desc: '' });
-  const [newAlumniForm, setNewAlumniForm] = useState({ name: '', promo: '', role: '', company: '', matricule: '' });
-  const [newGalleryForm, setNewGalleryForm] = useState({ title: '', category: 'Événements', image: '' });
-
   // General Inputs
-  const [editingNewsId, setEditingNewsId] = useState(null);
-  const [editNewsForm, setEditNewsForm] = useState({ title: '', content: '', date: '' });
   const [newSuggestion, setNewSuggestion] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Tous');
-
-  // Confirmation Modal
   const [confirmModal, setConfirmModal] = useState(null);
+
+  const navItems = [
+    { id: 'accueil', label: 'Accueil', icon: Home },
+    { id: 'bureau', label: 'Membres', icon: Users },
+    { id: 'emplois', label: 'Emplois & Stages', icon: Briefcase },
+    { id: 'activites', label: 'Activités', icon: Calendar },
+    { id: 'alumni', label: 'Alumni', icon: GraduationCap },
+    { id: 'mediatheque', label: 'Médiathèque', icon: Image },
+    { id: 'contact', label: 'Contact', icon: Mail },
+  ];
 
   const showToastMsg = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(null), 3500);
   };
 
-  // Chargement automatique des données distantes Supabase
+  // Met à jour la position de la pilule suiveuse (Apple Liquid Glass Pill)
   useEffect(() => {
-    if (!supabaseClient) return;
-
-    const loadSupabaseData = async () => {
-      try {
-        const { data: mData } = await supabaseClient.from('members').select('*');
-        if (mData && mData.length) setMembers(mData);
-
-        const { data: nData } = await supabaseClient.from('news').select('*').order('id', { ascending: false });
-        if (nData && nData.length) setNews(nData);
-
-        const { data: jData } = await supabaseClient.from('jobs').select('*').order('id', { ascending: false });
-        if (jData && jData.length) setJobs(jData);
-
-        const { data: aData } = await supabaseClient.from('alumni').select('*');
-        if (aData && aData.length) setAlumni(aData);
-
-        const { data: gData } = await supabaseClient.from('gallery').select('*');
-        if (gData && gData.length) setGallery(gData);
-
-        const { data: sData } = await supabaseClient.from('suggestions').select('*').order('id', { ascending: false });
-        if (sData && sData.length) setSuggestions(sData);
-      } catch (e) {
-        console.warn("Connexion à Supabase impossible ou tables inexistantes. Utilisation des données locales.", e);
-      }
-    };
-
-    loadSupabaseData();
-  }, []);
-
-  useEffect(() => {
-    if (isAdminLoggedIn) MediaStore.all().then(setPhotos).catch(() => {});
-    else setPhotos([]);
-  }, [isAdminLoggedIn]);
-
-  const openLibrary = (onPick) => setPicker({ onPick });
-
-  const uploadPhotos = async (fileList) => {
-    setUploading(true);
-    const added = [];
-    try {
-      for (const f of Array.from(fileList)) {
-        if (!f.type.startsWith('image/')) continue;
-        const data = await fileToDataUrl(f);
-        const item = { id: `p${Date.now()}${Math.random().toString(36).slice(2, 6)}`, name: f.name, data, ts: Date.now(), addedBy: currentUser.name };
-        await MediaStore.add(item);
-        added.push(item);
-      }
-      setPhotos(prev => [...added.slice().reverse(), ...prev]);
-      if (added.length) showToastMsg(`${added.length} photo(s) ajoutée(s) à l'espace de stockage.`);
-      else showToastMsg("Aucune image valide sélectionnée.");
-    } catch (err) {
-      showToastMsg("Échec de l'ajout de la photo.");
+    const targetId = hoveredTab || activeTab;
+    if (!navRef.current) return;
+    const targetEl = navRef.current.querySelector(`[data-tab="${targetId}"]`);
+    if (targetEl) {
+      setPillStyle({
+        left: targetEl.offsetLeft,
+        width: targetEl.offsetWidth,
+        opacity: 1
+      });
     }
-    setUploading(false);
-    return added;
-  };
-
-  const handleMemberLogin = async (e) => {
-    e.preventDefault();
-    if (Date.now() < lockUntil) {
-      showToastMsg(`Trop de tentatives. Réessayez dans ${Math.ceil((lockUntil - Date.now()) / 1000)} secondes.`);
-      return;
-    }
-    const rawId = memberMatriculeInput.trim();
-    const secret = memberPinInput.trim();
-
-    const isAdminAttempt = /admin$/i.test(rawId);
-    const id = isAdminAttempt ? rawId.replace(/admin$/i, '').trim() : rawId;
-    let result = null;
-    try {
-      if (isAdminAttempt) {
-        const acc = ADMIN_ACCOUNTS.find(a => a.login.toLowerCase() === id.toLowerCase());
-        const hash = await hashSecret(acc ? acc.login : id, secret);
-        if (acc && hash === acc.hash) result = { admin: true, user: { id: acc.login, name: acc.name, matricule: acc.login } };
-      } else {
-        const m = members.find(x => x.matricule === id);
-        const hash = await hashSecret(m ? m.matricule : id, secret);
-        if (m && hash === m.pinHash) result = { admin: false, user: m };
-      }
-    } catch (err) {
-      showToastMsg("Connexion impossible : ouvrez le portail via son lien https sécurisé.");
-      return;
-    }
-    if (result) {
-      setFailedAttempts(0);
-      setCurrentUser(result.user);
-      setIsAdminLoggedIn(result.admin);
-      setShowMemberModal(false);
-      setMemberMatriculeInput('');
-      setMemberPinInput('');
-      if (result.admin) {
-        showToastMsg("Bienvenue Administrateur !");
-        setActiveTab('admin-panel');
-      } else {
-        showToastMsg(`Bienvenue dans votre espace, ${result.user.name} !`);
-      }
-    } else {
-      const n = failedAttempts + 1;
-      if (n >= 5) {
-        setLockUntil(Date.now() + 60000);
-        setFailedAttempts(0);
-        showToastMsg("Trop de tentatives échouées. Connexion bloquée pendant 1 minute.");
-      } else {
-        setFailedAttempts(n);
-        showToastMsg("Identifiant ou code incorrect.");
-      }
-    }
-  };
-
-  const handleUpdatePin = async () => {
-    const pin = newPinInput.trim();
-    if (!/^\d{4,6}$/.test(pin)) {
-      showToastMsg("Le code PIN doit contenir 4 à 6 chiffres.");
-      return;
-    }
-    if (WEAK_PINS.includes(pin)) {
-      showToastMsg("Ce code PIN est trop facile à deviner. Choisissez-en un autre.");
-      return;
-    }
-    const pinHash = await hashSecret(currentUser.matricule, pin);
-    
-    if (supabaseClient) {
-      await supabaseClient.from('members').update({ pinHash }).eq('id', currentUser.id);
-    }
-    
-    setMembers(members.map(m => m.id === currentUser.id ? { ...m, pinHash } : m));
-    setCurrentUser({ ...currentUser, pinHash });
-    setNewPinInput('');
-    showToastMsg("Votre code PIN a été mis à jour avec succès !");
-  };
-
-  const exportCSV = (dataList, filename) => {
-    if (!dataList || !dataList.length) return;
-    const headers = Object.keys(dataList[0]).join(",");
-    const rows = dataList.map(obj => Object.values(obj).map(v => `"${v}"`).join(","));
-    const csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].join("\n");
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `${filename}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    showToastMsg(`Exportation de ${filename}.csv réussie !`);
-  };
+  }, [activeTab, hoveredTab]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FDFBF6] text-stone-800 font-sans antialiased selection:bg-orange-500 selection:text-white">
+    <div className="min-h-screen flex flex-col text-stone-800 font-sans antialiased selection:bg-orange-500 selection:text-white">
       
       {/* Toast Notification */}
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-stone-900 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 border border-stone-700 animate-bounce">
-          <CheckCircle className="text-orange-500 w-5 h-5 flex-shrink-0" />
-          <span className="text-sm font-medium">{toast}</span>
+        <div className="fixed top-6 right-6 z-50 glass-card text-stone-900 px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-white/60 animate-bounce">
+          <CheckCircle className="text-orange-600 w-5 h-5 flex-shrink-0" />
+          <span className="text-sm font-semibold">{toast}</span>
         </div>
       )}
 
-      {/* Confirmation Modal */}
-      {confirmModal && (
-        <div className="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-stone-200">
-            <h3 className="font-serif text-xl font-bold text-stone-900">{confirmModal.title}</h3>
-            <p className="text-sm text-stone-600 leading-relaxed">{confirmModal.message}</p>
-            <div className="flex justify-end gap-3 pt-2">
-              <button
-                onClick={() => setConfirmModal(null)}
-                className="px-4 py-2 rounded-xl text-stone-600 bg-stone-100 hover:bg-stone-200 text-sm font-semibold transition"
-              >
-                Annuler
-              </button>
-              <button
-                onClick={() => {
-                  confirmModal.onConfirm();
-                  setConfirmModal(null);
-                }}
-                className="px-4 py-2 rounded-xl bg-orange-600 text-white hover:bg-orange-500 text-sm font-semibold transition"
-              >
-                Confirmer
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-[#FDFBF6]/90 backdrop-blur-md border-b border-stone-200/80 transition-all">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          
-          <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setActiveTab('accueil')}>
-            <LogoCGE className="w-12 h-12 transition-transform duration-300 group-hover:scale-105" />
+      {/* Header Minimaliste en haut */}
+      <header className="sticky top-0 z-30 pt-4 px-4 sm:px-8">
+        <div className="max-w-7xl mx-auto glass-card rounded-3xl px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3 cursor-pointer group hover-scale" onClick={() => setActiveTab('accueil')}>
+            <LogoCGE className="w-9 h-9 transition-transform duration-300 group-hover:rotate-6" />
             <div>
-              <h1 className="font-serif font-bold text-xl text-stone-900 leading-tight">CGE ARSTM</h1>
-              <p className="text-xs text-stone-500 font-medium hidden sm:block">Conférence des Grandes Écoles</p>
+              <h1 className="font-serif font-bold text-lg text-stone-900 leading-tight">CGE ARSTM</h1>
+              <p className="text-[10px] text-stone-500 font-medium tracking-wide uppercase">Conférence des Grandes Écoles</p>
             </div>
           </div>
 
-          <nav className="hidden lg:flex items-center gap-1 bg-stone-100/80 p-1.5 rounded-2xl border border-stone-200/60">
-            {[
-              { id: 'accueil', label: 'Accueil', icon: Home },
-              { id: 'bureau', label: 'Bureau & Membres', icon: Users },
-              { id: 'emplois', label: 'Emplois & Stages', icon: Briefcase },
-              { id: 'activites', label: 'Activités', icon: Calendar },
-              { id: 'alumni', label: 'Alumni', icon: GraduationCap },
-              { id: 'mediatheque', label: 'Médiathèque', icon: Image },
-              { id: 'contact', label: 'Contact', icon: Mail },
-            ].map(item => {
-              const Icon = item.icon;
-              const isActive = activeTab === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveTab(item.id)}
-                  className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-                    isActive 
-                      ? 'bg-white text-orange-600 shadow-sm font-semibold' 
-                      : 'text-stone-600 hover:text-stone-900 hover:bg-white/50'
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  {item.label}
-                </button>
-              );
-            })}
-          </nav>
-
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-3">
             {currentUser ? (
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setActiveTab('espace-membre')}
-                  className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-orange-100 text-orange-800 text-sm font-semibold border border-orange-200 hover:bg-orange-200 transition"
+                  className="hover-scale flex items-center gap-2 px-4 py-2 rounded-2xl bg-orange-500/10 text-orange-700 text-xs font-semibold border border-orange-500/20"
                 >
                   <UserCheck className="w-4 h-4 text-orange-600" />
-                  <span className="hidden sm:inline">{isAdminLoggedIn ? "Administrateur" : currentUser.name.split(' ')[0]}</span>
+                  <span>{isAdminLoggedIn ? "Administrateur" : currentUser.name.split(' ')[0]}</span>
                 </button>
-
-                {isAdminLoggedIn && (
-                  <button
-                    onClick={() => setActiveTab('admin-panel')}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-500 transition shadow-sm"
-                  >
-                    <ShieldCheck className="w-4 h-4" />
-                    <span className="hidden md:inline">Panneau Admin</span>
-                  </button>
-                )}
               </div>
             ) : (
               <button
                 onClick={() => setShowMemberModal(true)}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-white text-stone-800 border border-stone-200 shadow-sm hover:bg-stone-50 transition"
+                className="hover-scale flex items-center gap-2 px-5 py-2 rounded-2xl text-xs font-semibold bg-stone-900 text-white shadow-lg shadow-stone-900/20 hover:bg-orange-600 transition duration-300"
               >
-                <Key className="w-4 h-4 text-orange-600" />
+                <Key className="w-4 h-4 text-orange-400" />
                 <span>Espace Membre</span>
               </button>
             )}
-
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl text-stone-700 hover:bg-stone-100 transition"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
           </div>
         </div>
-
-        {mobileMenuOpen && (
-          <div className="lg:hidden bg-white border-b border-stone-200 px-4 pt-2 pb-6 space-y-1 shadow-lg">
-            {[
-              { id: 'accueil', label: 'Accueil', icon: Home },
-              { id: 'bureau', label: 'Bureau & Membres', icon: Users },
-              { id: 'emplois', label: 'Emplois & Stages', icon: Briefcase },
-              { id: 'activites', label: 'Activités & Projets', icon: Calendar },
-              { id: 'alumni', label: 'Réseau Alumni', icon: GraduationCap },
-              { id: 'mediatheque', label: 'Médiathèque', icon: Image },
-              { id: 'reglement', label: 'Règlement Intérieur', icon: FileText },
-              { id: 'suggestions', label: 'Boîte à Suggestions', icon: MessageSquare },
-              { id: 'contact', label: 'Contact', icon: Mail },
-            ].map(item => {
-              const Icon = item.icon;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => { setActiveTab(item.id); setMobileMenuOpen(false); }}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm font-medium ${
-                    activeTab === item.id ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-stone-700 hover:bg-stone-50'
-                  }`}
-                >
-                  <Icon className="w-5 h-5 text-orange-600" />
-                  {item.label}
-                </button>
-              );
-            })}
-          </div>
-        )}
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         {/* HOMEPAGE VIEW */}
         {activeTab === 'accueil' && (
-          <div className="space-y-16">
-            
-            <div className="relative rounded-3xl overflow-hidden bg-stone-900 text-white p-8 sm:p-14 shadow-2xl">
-              <div className="absolute -right-20 -bottom-20 opacity-10 pointer-events-none">
-                <LogoCGE className="w-96 h-96" />
-              </div>
+          <div className="space-y-12">
+            <div className="relative rounded-3xl overflow-hidden glass-card p-8 sm:p-14 border border-white/80">
               <div className="relative z-10 max-w-2xl space-y-6">
-                <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 text-xs font-semibold uppercase tracking-wider">
-                  <Sparkles className="w-3.5 h-3.5" /> Académie Régionale des Sciences et Techniques de la Mer
+                <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500/15 text-orange-700 border border-orange-500/30 text-xs font-semibold tracking-wide">
+                  <Sparkles className="w-3.5 h-3.5 text-orange-600" /> ARSTM — Excellence Navale & Portuaire
                 </span>
-                <h2 className="font-serif text-3xl sm:text-5xl font-bold leading-tight">
-                  Bienvenue sur le portail de la <span className="text-orange-500">CGE ARSTM</span>
+                <h2 className="font-serif text-3xl sm:text-5xl font-extrabold text-stone-900 leading-tight">
+                  Portail Officiel de la <span className="bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">CGE ARSTM</span>
                 </h2>
-                <p className="text-stone-300 text-base sm:text-lg leading-relaxed">
-                  La Conférence des Grandes Écoles rassemble, représente et impulse l'excellence académique, l'innovation scientifique et l'esprit de corps des élèves officiers et ingénieurs.
+                <p className="text-stone-600 text-base sm:text-lg leading-relaxed">
+                  L'espace communautaire interactif dédié à la cohésion, aux opportunités de carrière et au rayonnement des élèves officiers et ingénieurs.
                 </p>
-                <div className="flex flex-wrap gap-4 pt-2">
-                  <button
-                    onClick={() => setActiveTab('bureau')}
-                    className="px-6 py-3.5 rounded-2xl bg-orange-600 hover:bg-orange-500 text-white font-semibold shadow-lg shadow-orange-600/30 transition flex items-center gap-2"
-                  >
-                    Découvrir le Bureau
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('emplois')}
-                    className="px-6 py-3.5 rounded-2xl bg-stone-800 hover:bg-stone-700 text-white font-semibold border border-stone-700 transition"
-                  >
-                    Consulter les Offres
-                  </button>
-                </div>
               </div>
             </div>
 
-            {/* SHORTCUT PILLS */}
-            <div>
-              <h3 className="font-serif text-2xl font-bold text-stone-900 mb-6 flex items-center gap-3">
-                <Sparkles className="text-orange-600 w-6 h-6" />
-                Navigation Rapide
-              </h3>
-              {/* ADMIN EDIT QUICK LINKS FORM */}
-              {isAdminLoggedIn && (
-                <div className="mb-6 p-6 bg-orange-50 border border-orange-200 rounded-3xl space-y-4">
-                  <h4 className="font-bold text-orange-900 flex items-center gap-2">
-                    <PlusCircle className="w-5 h-5 text-orange-600" />
-                    Modifier les textes de la Navigation Rapide
-                  </h4>
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {quickLinks.map((item, idx) => (
-                      <div key={item.id} className="p-3 bg-white rounded-xl border border-stone-200 space-y-2">
-                        <input
-                          type="text"
-                          value={item.label}
-                          onChange={(e) => setQuickLinks(quickLinks.map((q, i) => i === idx ? { ...q, label: e.target.value } : q))}
-                          className="w-full p-2 rounded-lg border border-stone-200 text-sm font-semibold"
-                          placeholder="Titre"
-                        />
-                        <input
-                          type="text"
-                          value={item.desc}
-                          onChange={(e) => setQuickLinks(quickLinks.map((q, i) => i === idx ? { ...q, desc: e.target.value } : q))}
-                          className="w-full p-2 rounded-lg border border-stone-200 text-xs"
-                          placeholder="Description"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                  <p className="text-xs text-orange-700">Les modifications sont appliquées immédiatement ci-dessous.</p>
-                </div>
-              )}
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {quickLinks.map(item => {
-                  const Icon = item.icon;
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => setActiveTab(item.id)}
-                      className={`p-5 rounded-2xl border text-left flex flex-col justify-between transition hover:shadow-md ${item.color}`}
-                    >
-                      <Icon className="w-8 h-8 mb-3 opacity-90" />
-                      <div>
-                        <h4 className="font-semibold text-base mb-1">{item.label}</h4>
-                        <p className="text-xs opacity-75 font-normal">{item.desc}</p>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* NEWS & ANNOUNCEMENTS */}
-            <div>
-              <div className="flex justify-between items-end mb-6">
-                <div>
-                  <h3 className="font-serif text-2xl font-bold text-stone-900">Dernières Actualités</h3>
-                  <p className="text-stone-500 text-sm">Informations officielles du bureau de la CGE</p>
-                </div>
-              </div>
-
-              {/* ADMIN ADD NEWS FORM */}
-              {isAdminLoggedIn && (
-                <div className="mb-8 p-6 bg-orange-50 border border-orange-200 rounded-3xl space-y-4">
-                  <h4 className="font-bold text-orange-900 flex items-center gap-2">
-                    <PlusCircle className="w-5 h-5 text-orange-600" />
-                    Ajouter une nouvelle actualité
-                  </h4>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <input
-                      type="text"
-                      placeholder="Titre de l'actualité"
-                      value={newNewsForm.title}
-                      onChange={(e) => setNewNewsForm({ ...newNewsForm, title: e.target.value })}
-                      className="p-3 rounded-xl border border-stone-200 bg-white text-sm"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Date (ex: 25 Septembre 2026)"
-                      value={newNewsForm.date}
-                      onChange={(e) => setNewNewsForm({ ...newNewsForm, date: e.target.value })}
-                      className="p-3 rounded-xl border border-stone-200 bg-white text-sm"
-                    />
-                  </div>
-                  <textarea
-                    placeholder="Contenu de l'actualité..."
-                    value={newNewsForm.content}
-                    onChange={(e) => setNewNewsForm({ ...newNewsForm, content: e.target.value })}
-                    className="w-full p-3 rounded-xl border border-stone-200 bg-white text-sm"
-                    rows={3}
-                  />
-                  <button
-                    onClick={async () => {
-                      if (!newNewsForm.title || !newNewsForm.content) return;
-                      const newItem = {
-                        title: newNewsForm.title,
-                        content: newNewsForm.content,
-                        date: newNewsForm.date || new Date().toLocaleDateString('fr-FR'),
-                        likes: 0
-                      };
-                      if (supabaseClient) {
-                        const { data, error } = await supabaseClient.from('news').insert([newItem]).select();
-                        if (!error && data) setNews([data[0], ...news]);
-                      } else {
-                        setNews([{ id: Date.now(), ...newItem }, ...news]);
-                      }
-                      setNewNewsForm({ title: '', content: '', date: '' });
-                      showToastMsg("Actualité ajoutée avec succès !");
-                    }}
-                    className="px-5 py-2.5 bg-orange-600 text-white rounded-xl text-sm font-semibold hover:bg-orange-500 transition"
-                  >
-                    Publier l'actualité
-                  </button>
-                </div>
-              )}
-
+            {/* NEWS SECTION */}
+            <div className="space-y-6">
+              <h3 className="font-serif text-2xl font-bold text-stone-900">Dernières Actualités</h3>
               <div className="grid md:grid-cols-2 gap-6">
                 {news.map(item => (
-                  <div key={item.id} className="bg-white rounded-3xl p-6 border border-stone-200/80 shadow-sm space-y-4 hover:border-orange-300 transition relative">
-                    {isAdminLoggedIn && editingNewsId !== item.id && (
-                      <div className="absolute top-4 right-4 flex gap-1">
-                        <button
-                          onClick={() => {
-                            setEditingNewsId(item.id);
-                            setEditNewsForm({ title: item.title, content: item.content, date: item.date });
-                          }}
-                          className="p-2 text-stone-500 hover:bg-stone-100 rounded-xl transition"
-                          title="Modifier"
-                        >
-                          <RefreshCw className="w-5 h-5" />
-                        </button>
-                        <button
-                          onClick={() => {
-                            setConfirmModal({
-                              title: "Supprimer l'actualité",
-                              message: `Êtes-vous sûr de vouloir supprimer "${item.title}" ?`,
-                              onConfirm: async () => {
-                                if (supabaseClient) {
-                                  await supabaseClient.from('news').delete().eq('id', item.id);
-                                }
-                                setNews(news.filter(n => n.id !== item.id));
-                                showToastMsg("Actualité supprimée.");
-                              }
-                            });
-                          }}
-                          className="p-2 text-rose-600 hover:bg-rose-50 rounded-xl transition"
-                          title="Supprimer"
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </button>
-                      </div>
-                    )}
-
-                    {isAdminLoggedIn && editingNewsId === item.id ? (
-                      <div className="space-y-3 pr-8">
-                        <input
-                          type="text"
-                          value={editNewsForm.title}
-                          onChange={(e) => setEditNewsForm({ ...editNewsForm, title: e.target.value })}
-                          className="w-full p-2.5 rounded-xl border border-stone-200 text-sm font-semibold"
-                          placeholder="Titre"
-                        />
-                        <input
-                          type="text"
-                          value={editNewsForm.date}
-                          onChange={(e) => setEditNewsForm({ ...editNewsForm, date: e.target.value })}
-                          className="w-full p-2.5 rounded-xl border border-stone-200 text-xs"
-                          placeholder="Date"
-                        />
-                        <textarea
-                          value={editNewsForm.content}
-                          onChange={(e) => setEditNewsForm({ ...editNewsForm, content: e.target.value })}
-                          className="w-full p-2.5 rounded-xl border border-stone-200 text-sm"
-                          rows={3}
-                          placeholder="Contenu"
-                        />
-                        <div className="flex gap-2">
-                          <button
-                            onClick={async () => {
-                              if (supabaseClient) {
-                                await supabaseClient.from('news').update(editNewsForm).eq('id', item.id);
-                              }
-                              setNews(news.map(n => n.id === item.id ? { ...n, ...editNewsForm } : n));
-                              setEditingNewsId(null);
-                              showToastMsg("Actualité mise à jour.");
-                            }}
-                            className="flex-1 py-2 bg-orange-600 text-white rounded-xl text-xs font-semibold hover:bg-orange-500 transition"
-                          >
-                            Enregistrer
-                          </button>
-                          <button
-                            onClick={() => setEditingNewsId(null)}
-                            className="flex-1 py-2 bg-stone-100 text-stone-700 rounded-xl text-xs font-semibold hover:bg-stone-200 transition"
-                          >
-                            Annuler
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="flex justify-between items-center text-xs font-semibold pr-16">
-                          <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full">{item.date}</span>
-                          <button
-                            onClick={async () => {
-                              const newLikes = item.likes + 1;
-                              if (supabaseClient) {
-                                await supabaseClient.from('news').update({ likes: newLikes }).eq('id', item.id);
-                              }
-                              setNews(news.map(n => n.id === item.id ? { ...n, likes: newLikes } : n));
-                              showToastMsg("Merci pour votre appréciation !");
-                            }}
-                            className="flex items-center gap-1.5 text-stone-500 hover:text-rose-600 transition"
-                          >
-                            <Heart className="w-4 h-4 text-rose-500 fill-rose-500" />
-                            <span>{item.likes} j'aime</span>
-                          </button>
-                        </div>
-                        <h4 className="font-serif text-xl font-bold text-stone-900">{item.title}</h4>
-                        <p className="text-stone-600 text-sm leading-relaxed">{item.content}</p>
-                      </>
-                    )}
+                  <div key={item.id} className="glass-card rounded-3xl p-6 hover-scale space-y-4">
+                    <div className="flex justify-between items-center text-xs font-semibold">
+                      <span className="bg-orange-500/10 text-orange-700 px-3 py-1 rounded-full border border-orange-500/20">{item.date}</span>
+                      <span className="flex items-center gap-1 text-rose-500 font-bold"><Heart className="w-4 h-4 fill-rose-500" /> {item.likes}</span>
+                    </div>
+                    <h4 className="font-serif text-xl font-bold text-stone-900">{item.title}</h4>
+                    <p className="text-stone-600 text-sm leading-relaxed">{item.content}</p>
                   </div>
                 ))}
               </div>
             </div>
-
           </div>
         )}
 
-        {/* BUREAU VIEW */}
+        {/* BUREAU / MEMBRES VIEW */}
         {activeTab === 'bureau' && (
           <div className="space-y-8">
             <div>
-              <h2 className="font-serif text-3xl font-bold text-stone-900">Bureau Executif & Membres</h2>
-              <p className="text-stone-500">Les responsables engagés au service des Grandes Écoles de l'ARSTM</p>
+              <h2 className="font-serif text-3xl font-bold text-stone-900">Bureau Exécutif & Membres</h2>
+              <p className="text-stone-500">Représentants officiels de la Conférence des Grandes Écoles</p>
             </div>
-
-            {/* ADMIN ADD MEMBER FORM */}
-            {isAdminLoggedIn && (
-              <div className="p-6 bg-orange-50 border border-orange-200 rounded-3xl space-y-4">
-                <h4 className="font-bold text-orange-900 flex items-center gap-2">
-                  <PlusCircle className="w-5 h-5 text-orange-600" />
-                  Ajouter un nouveau membre au bureau
-                </h4>
-                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  <input
-                    type="text"
-                    placeholder="Nom complet"
-                    value={newMemberForm.name}
-                    onChange={(e) => setNewMemberForm({ ...newMemberForm, name: e.target.value })}
-                    className="p-3 rounded-xl border border-stone-200 bg-white text-sm"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Rôle / Poste"
-                    value={newMemberForm.role}
-                    onChange={(e) => setNewMemberForm({ ...newMemberForm, role: e.target.value })}
-                    className="p-3 rounded-xl border border-stone-200 bg-white text-sm"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Matricule (ex: 2026-ARSTM-04)"
-                    value={newMemberForm.matricule}
-                    onChange={(e) => setNewMemberForm({ ...newMemberForm, matricule: e.target.value })}
-                    className="p-3 rounded-xl border border-stone-200 bg-white text-sm"
-                  />
-                  <PhotoPicker
-                    value={newMemberForm.image}
-                    onChange={(v) => setNewMemberForm(f => ({ ...f, image: v }))}
-                    openLibrary={openLibrary}
-                    placeholder="Photo (choisir ou coller un lien)"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Biographie courte"
-                    value={newMemberForm.bio}
-                    onChange={(e) => setNewMemberForm({ ...newMemberForm, bio: e.target.value })}
-                    className="p-3 rounded-xl border border-stone-200 bg-white text-sm sm:col-span-2"
-                  />
-                </div>
-                <button
-                  onClick={async () => {
-                    if (!newMemberForm.name || !newMemberForm.role) return;
-                    const matricule = (newMemberForm.matricule || `2026-ARSTM-${String(members.length + 1).padStart(2, '0')}`).trim();
-                    if (members.some(x => x.matricule === matricule)) {
-                      showToastMsg("Ce matricule existe déjà.");
-                      return;
-                    }
-                    const pin = genPin();
-                    const pinHash = await hashSecret(matricule, pin);
-                    
-                    const newMemberObj = {
-                      name: newMemberForm.name,
-                      role: newMemberForm.role,
-                      matricule,
-                      bio: newMemberForm.bio || "Membre de la CGE ARSTM.",
-                      image: newMemberForm.image || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400",
-                      pinHash
-                    };
-
-                    if (supabaseClient) {
-                      const { data, error } = await supabaseClient.from('members').insert([newMemberObj]).select();
-                      if (!error && data) setMembers(prev => [...prev, data[0]]);
-                    } else {
-                      setMembers(prev => [...prev, { id: Date.now(), ...newMemberObj }]);
-                    }
-
-                    setNewMemberForm({ name: '', role: '', matricule: '', bio: '', image: '' });
-                    setTempPinInfo({ name: newMemberForm.name, pin });
-                  }}
-                  className="px-5 py-2.5 bg-orange-600 text-white rounded-xl text-sm font-semibold hover:bg-orange-500 transition"
-                >
-                  Enregistrer le membre
-                </button>
-              </div>
-            )}
-
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {members.map(m => (
-                <div key={m.id} className="bg-white rounded-3xl overflow-hidden border border-stone-200/80 shadow-sm hover:shadow-lg transition flex flex-col relative">
-                  {isAdminLoggedIn && (
-                    <button
-                      onClick={() => {
-                        setConfirmModal({
-                          title: "Supprimer le membre",
-                          message: `Retirer ${m.name} du bureau exécutif ?`,
-                          onConfirm: async () => {
-                            if (supabaseClient) {
-                              await supabaseClient.from('members').delete().eq('id', m.id);
-                            }
-                            setMembers(members.filter(item => item.id !== m.id));
-                            showToastMsg("Membre supprimé.");
-                          }
-                        });
-                      }}
-                      className="absolute top-3 right-3 z-10 p-2 bg-white/80 backdrop-blur-md text-rose-600 hover:bg-rose-600 hover:text-white rounded-xl transition shadow-md"
-                      title="Supprimer"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                  )}
+                <div key={m.id} className="glass-card rounded-3xl overflow-hidden hover-scale flex flex-col">
                   <img src={m.image} alt={m.name} className="w-full h-56 object-cover" />
                   <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                     <div>
-                      <span className="text-xs font-bold uppercase tracking-wider text-orange-600 bg-orange-50 px-3 py-1 rounded-full inline-block mb-2">
+                      <span className="text-[10px] font-extrabold uppercase tracking-widest text-orange-600 bg-orange-500/10 border border-orange-500/20 px-3 py-1 rounded-full inline-block mb-2">
                         {m.role}
                       </span>
                       <h3 className="font-serif text-xl font-bold text-stone-900">{m.name}</h3>
                       <p className="text-stone-600 text-sm mt-2 leading-relaxed">{m.bio}</p>
                     </div>
-                    <div className="pt-2 border-t border-stone-100 text-xs text-stone-400 font-medium">
-                      {(isAdminLoggedIn || (currentUser && currentUser.id === m.id)) ? `Matricule : ${m.matricule}` : "Membre du bureau exécutif"}
-                    </div>
                   </div>
                 </div>
               ))}
@@ -983,121 +346,39 @@ function App() {
           </div>
         )}
 
-        {/* JOBS VIEW */}
+        {/* EMPLOIS & STAGES VIEW */}
         {activeTab === 'emplois' && (
           <div className="space-y-8">
             <div>
               <h2 className="font-serif text-3xl font-bold text-stone-900">Offres d'Emplois & Stages</h2>
-              <p className="text-stone-500">Opportunités professionnelles sélectionnées pour les étudiants et diplômés</p>
+              <p className="text-stone-500">Opportunités professionnelles maritimes et industrielles</p>
             </div>
-
-            {/* ADMIN ADD JOB FORM */}
-            {isAdminLoggedIn && (
-              <div className="p-6 bg-orange-50 border border-orange-200 rounded-3xl space-y-4">
-                <h4 className="font-bold text-orange-900 flex items-center gap-2">
-                  <PlusCircle className="w-5 h-5 text-orange-600" />
-                  Publier une offre d'emploi ou de stage
-                </h4>
-                <div className="grid sm:grid-cols-3 gap-4">
-                  <input
-                    type="text"
-                    placeholder="Intitulé du poste"
-                    value={newJobForm.title}
-                    onChange={(e) => setNewJobForm({ ...newJobForm, title: e.target.value })}
-                    className="p-3 rounded-xl border border-stone-200 bg-white text-sm"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Entreprise"
-                    value={newJobForm.company}
-                    onChange={(e) => setNewJobForm({ ...newJobForm, company: e.target.value })}
-                    className="p-3 rounded-xl border border-stone-200 bg-white text-sm"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Type (ex: Stage, CDD, CDI)"
-                    value={newJobForm.type}
-                    onChange={(e) => setNewJobForm({ ...newJobForm, type: e.target.value })}
-                    className="p-3 rounded-xl border border-stone-200 bg-white text-sm"
-                  />
-                </div>
-                <textarea
-                  placeholder="Description du poste..."
-                  value={newJobForm.desc}
-                  onChange={(e) => setNewJobForm({ ...newJobForm, desc: e.target.value })}
-                  className="w-full p-3 rounded-xl border border-stone-200 bg-white text-sm"
-                  rows={2}
-                />
-                <button
-                  onClick={async () => {
-                    if (!newJobForm.title || !newJobForm.company) return;
-                    const newJobObj = {
-                      title: newJobForm.title,
-                      company: newJobForm.company,
-                      type: newJobForm.type,
-                      desc: newJobForm.desc
-                    };
-
-                    if (supabaseClient) {
-                      const { data, error } = await supabaseClient.from('jobs').insert([newJobObj]).select();
-                      if (!error && data) setJobs([data[0], ...jobs]);
-                    } else {
-                      setJobs([{ id: Date.now(), ...newJobObj }, ...jobs]);
-                    }
-
-                    setNewJobForm({ title: '', company: '', type: 'Stage', desc: '' });
-                    showToastMsg("Offre d'emploi publiée !");
-                  }}
-                  className="px-5 py-2.5 bg-orange-600 text-white rounded-xl text-sm font-semibold hover:bg-orange-500 transition"
-                >
-                  Ajouter l'offre
-                </button>
-              </div>
-            )}
-
             <div className="space-y-4">
               {jobs.map(j => (
-                <div key={j.id} className="bg-white p-6 rounded-3xl border border-stone-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-orange-300 transition relative">
+                <div key={j.id} className="glass-card p-6 rounded-3xl hover-scale flex flex-col md:flex-row md:items-center justify-between gap-6">
                   <div className="space-y-2">
-                    <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full">{j.type}</span>
+                    <span className="text-xs font-bold text-emerald-700 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">{j.type}</span>
                     <h3 className="font-serif text-xl font-bold text-stone-900">{j.title}</h3>
-                    <p className="text-sm font-medium text-stone-500 flex items-center gap-2">
-                      <Building className="w-4 h-4 text-orange-600" />
-                      {j.company}
-                    </p>
+                    <p className="text-sm font-semibold text-stone-600 flex items-center gap-2"><Building className="w-4 h-4 text-orange-600" /> {j.company}</p>
                     <p className="text-stone-600 text-sm">{j.desc}</p>
                   </div>
-                  <div className="flex items-center gap-3 self-start md:self-center">
-                    <button 
-                      onClick={() => showToastMsg("Votre candidature a bien été transmise à l'entreprise partenaire.")}
-                      className="px-6 py-3 rounded-2xl bg-orange-600 text-white font-semibold hover:bg-orange-500 transition whitespace-nowrap"
-                    >
-                      Postuler à cette offre
-                    </button>
-                    {isAdminLoggedIn && (
-                      <button
-                        onClick={() => {
-                          setConfirmModal({
-                            title: "Supprimer l'offre",
-                            message: `Supprimer l'offre "${j.title}" ?`,
-                            onConfirm: async () => {
-                              if (supabaseClient) {
-                                await supabaseClient.from('jobs').delete().eq('id', j.id);
-                              }
-                              setJobs(jobs.filter(item => item.id !== j.id));
-                              showToastMsg("Offre supprimée.");
-                            }
-                          });
-                        }}
-                        className="p-3 text-rose-600 hover:bg-rose-50 rounded-2xl transition"
-                        title="Supprimer"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
-                    )}
-                  </div>
+                  <button onClick={() => showToastMsg("Candidature transmise avec succès !")} className="hover-scale px-6 py-3 rounded-2xl bg-orange-600 text-white font-semibold shadow-lg shadow-orange-600/30 whitespace-nowrap">
+                    Postuler
+                  </button>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* ACTIVITES VIEW */}
+        {activeTab === 'activites' && (
+          <div className="space-y-8">
+            <h2 className="font-serif text-3xl font-bold text-stone-900">Activités & Projets</h2>
+            <div className="glass-card p-8 rounded-3xl text-center space-y-4">
+              <Calendar className="w-12 h-12 mx-auto text-orange-600" />
+              <h3 className="font-serif text-xl font-bold">Calendrier des événements à venir</h3>
+              <p className="text-stone-600 text-sm max-w-md mx-auto">Consultez régulièrement cette rubrique pour suivre les ateliers technologiques, séminaires et rencontres sportives.</p>
             </div>
           </div>
         )}
@@ -1105,749 +386,86 @@ function App() {
         {/* ALUMNI VIEW */}
         {activeTab === 'alumni' && (
           <div className="space-y-8">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <h2 className="font-serif text-3xl font-bold text-stone-900">Réseau Alumni & Diplômés</h2>
-                <p className="text-stone-500">Annuaire des anciens élèves de la CGE ARSTM dans le monde maritime et industriel</p>
-              </div>
-              <button 
-                onClick={() => exportCSV(alumni, 'annuaire_alumni_cge')}
-                className="inline-flex items-center gap-2 px-4 py-2.5 bg-stone-900 text-white rounded-xl text-sm font-medium hover:bg-stone-800 transition"
-              >
-                <Download className="w-4 h-4" />
-                Exporter l'Annuaire (CSV)
-              </button>
-            </div>
-
-            {/* ADMIN ADD ALUMNI FORM */}
-            {isAdminLoggedIn && (
-              <div className="p-6 bg-orange-50 border border-orange-200 rounded-3xl space-y-4">
-                <h4 className="font-bold text-orange-900 flex items-center gap-2">
-                  <PlusCircle className="w-5 h-5 text-orange-600" />
-                  Ajouter un nouveau diplômé (Alumni)
-                </h4>
-                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  <input
-                    type="text"
-                    placeholder="Nom complet"
-                    value={newAlumniForm.name}
-                    onChange={(e) => setNewAlumniForm({ ...newAlumniForm, name: e.target.value })}
-                    className="p-3 rounded-xl border border-stone-200 bg-white text-sm"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Promotion (ex: 2025)"
-                    value={newAlumniForm.promo}
-                    onChange={(e) => setNewAlumniForm({ ...newAlumniForm, promo: e.target.value })}
-                    className="p-3 rounded-xl border border-stone-200 bg-white text-sm"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Poste / Rôle actuel"
-                    value={newAlumniForm.role}
-                    onChange={(e) => setNewAlumniForm({ ...newAlumniForm, role: e.target.value })}
-                    className="p-3 rounded-xl border border-stone-200 bg-white text-sm"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Entreprise"
-                    value={newAlumniForm.company}
-                    onChange={(e) => setNewAlumniForm({ ...newAlumniForm, company: e.target.value })}
-                    className="p-3 rounded-xl border border-stone-200 bg-white text-sm"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Matricule"
-                    value={newAlumniForm.matricule}
-                    onChange={(e) => setNewAlumniForm({ ...newAlumniForm, matricule: e.target.value })}
-                    className="p-3 rounded-xl border border-stone-200 bg-white text-sm"
-                  />
-                </div>
-                <button
-                  onClick={async () => {
-                    if (!newAlumniForm.name || !newAlumniForm.company) return;
-                    
-                    if (supabaseClient) {
-                      const { data, error } = await supabaseClient.from('alumni').insert([newAlumniForm]).select();
-                      if (!error && data) setAlumni([...alumni, data[0]]);
-                    } else {
-                      setAlumni([...alumni, { id: Date.now(), ...newAlumniForm }]);
-                    }
-
-                    setNewAlumniForm({ name: '', promo: '', role: '', company: '', matricule: '' });
-                    showToastMsg("Alumni ajouté à l'annuaire !");
-                  }}
-                  className="px-5 py-2.5 bg-orange-600 text-white rounded-xl text-sm font-semibold hover:bg-orange-500 transition"
-                >
-                  Ajouter l'Alumni
-                </button>
-              </div>
-            )}
-
-            {/* Live Search Bar */}
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
-              <input
-                type="text"
-                placeholder="Rechercher par nom, promotion, poste ou entreprise..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-white border border-stone-200 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 text-stone-800 font-medium text-sm shadow-sm"
-              />
-            </div>
-
+            <h2 className="font-serif text-3xl font-bold text-stone-900">Réseau Alumni</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {alumni
-                .filter(a => 
-                  a.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  a.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  a.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  a.promo.includes(searchTerm)
-                )
-                .map(a => (
-                  <div key={a.id} className="bg-white p-6 rounded-3xl border border-stone-200/80 shadow-sm space-y-3 hover:border-orange-300 transition relative">
-                    {isAdminLoggedIn && (
-                      <button
-                        onClick={() => {
-                          setConfirmModal({
-                            title: "Supprimer l'Alumni",
-                            message: `Supprimer ${a.name} de l'annuaire ?`,
-                            onConfirm: async () => {
-                              if (supabaseClient) {
-                                await supabaseClient.from('alumni').delete().eq('id', a.id);
-                              }
-                              setAlumni(alumni.filter(item => item.id !== a.id));
-                              showToastMsg("Alumni supprimé.");
-                            }
-                          });
-                        }}
-                        className="absolute top-4 right-4 text-rose-600 hover:bg-rose-50 p-2 rounded-xl transition"
-                        title="Supprimer"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
-                    )}
-                    <div className="flex justify-between items-start pr-8">
-                      <h3 className="font-serif text-lg font-bold text-stone-900">{a.name}</h3>
-                      <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2.5 py-1 rounded-lg">Promo {a.promo}</span>
-                    </div>
-                    <p className="text-sm font-semibold text-stone-700">{a.role}</p>
-                    <p className="text-xs text-stone-500 flex items-center gap-1.5">
-                      <Building className="w-4 h-4 text-orange-500" />
-                      {a.company}
-                    </p>
+              {alumni.map(a => (
+                <div key={a.id} className="glass-card p-6 rounded-3xl hover-scale space-y-3">
+                  <div className="flex justify-between items-start">
+                    <h3 className="font-serif text-lg font-bold text-stone-900">{a.name}</h3>
+                    <span className="text-xs font-bold text-orange-600 bg-orange-500/10 px-2.5 py-1 rounded-lg">Promo {a.promo}</span>
                   </div>
-                ))}
-            </div>
-          </div>
-        )}
-
-        {/* GALLERY VIEW */}
-        {activeTab === 'mediatheque' && (
-          <div className="space-y-8">
-            <div>
-              <h2 className="font-serif text-3xl font-bold text-stone-900">Médiathèque Officielle</h2>
-              <p className="text-stone-500">Retour en images sur les rassemblements et événements phares de la CGE</p>
-            </div>
-
-            {/* ADMIN ADD GALLERY ITEM FORM */}
-            {isAdminLoggedIn && (
-              <div className="p-6 bg-orange-50 border border-orange-200 rounded-3xl space-y-4">
-                <h4 className="font-bold text-orange-900 flex items-center gap-2">
-                  <PlusCircle className="w-5 h-5 text-orange-600" />
-                  Ajouter une photo à la médiathèque
-                </h4>
-                <div className="grid sm:grid-cols-3 gap-4">
-                  <input
-                    type="text"
-                    placeholder="Titre de la photo"
-                    value={newGalleryForm.title}
-                    onChange={(e) => setNewGalleryForm({ ...newGalleryForm, title: e.target.value })}
-                    className="p-3 rounded-xl border border-stone-200 bg-white text-sm"
-                  />
-                  <select
-                    value={newGalleryForm.category}
-                    onChange={(e) => setNewGalleryForm({ ...newGalleryForm, category: e.target.value })}
-                    className="p-3 rounded-xl border border-stone-200 bg-white text-sm"
-                  >
-                    <option value="Événements">Événements</option>
-                    <option value="Formation">Formation</option>
-                    <option value="Vie Étudiante">Vie Étudiante</option>
-                  </select>
-                  <PhotoPicker
-                    value={newGalleryForm.image}
-                    onChange={(v) => setNewGalleryForm(f => ({ ...f, image: v }))}
-                    openLibrary={openLibrary}
-                    placeholder="Photo (choisir ou coller un lien)"
-                  />
+                  <p className="text-sm font-semibold text-stone-700">{a.role}</p>
+                  <p className="text-xs text-stone-500 flex items-center gap-1.5"><Building className="w-4 h-4 text-orange-500" /> {a.company}</p>
                 </div>
-                <button
-                  onClick={async () => {
-                    if (!newGalleryForm.title || !newGalleryForm.image) return;
-                    
-                    if (supabaseClient) {
-                      const { data, error } = await supabaseClient.from('gallery').insert([newGalleryForm]).select();
-                      if (!error && data) setGallery([...gallery, data[0]]);
-                    } else {
-                      setGallery([...gallery, { id: Date.now(), ...newGalleryForm }]);
-                    }
-
-                    setNewGalleryForm({ title: '', category: 'Événements', image: '' });
-                    showToastMsg("Photo ajoutée à la médiathèque !");
-                  }}
-                  className="px-5 py-2.5 bg-orange-600 text-white rounded-xl text-sm font-semibold hover:bg-orange-500 transition"
-                >
-                  Ajouter la photo
-                </button>
-              </div>
-            )}
-
-            {/* Category Filter Pills */}
-            <div className="flex flex-wrap gap-2">
-              {['Tous', 'Événements', 'Formation', 'Vie Étudiante'].map(cat => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`px-4 py-2 rounded-xl text-xs font-semibold transition ${
-                    selectedCategory === cat 
-                      ? 'bg-orange-600 text-white shadow-sm' 
-                      : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-50'
-                  }`}
-                >
-                  {cat}
-                </button>
               ))}
             </div>
+          </div>
+        )}
 
+        {/* MEDIATHEQUE VIEW */}
+        {activeTab === 'mediatheque' && (
+          <div className="space-y-8">
+            <h2 className="font-serif text-3xl font-bold text-stone-900">Médiathèque Officielle</h2>
             <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-              {gallery
-                .filter(g => selectedCategory === 'Tous' || g.category === selectedCategory)
-                .map(item => (
-                  <div key={item.id} className="bg-white rounded-3xl overflow-hidden border border-stone-200/80 shadow-sm group relative">
-                    {isAdminLoggedIn && (
-                      <button
-                        onClick={() => {
-                          setConfirmModal({
-                            title: "Supprimer la photo",
-                            message: `Supprimer "${item.title}" de la médiathèque ?`,
-                            onConfirm: async () => {
-                              if (supabaseClient) {
-                                await supabaseClient.from('gallery').delete().eq('id', item.id);
-                              }
-                              setGallery(gallery.filter(i => i.id !== item.id));
-                              showToastMsg("Photo supprimée.");
-                            }
-                          });
-                        }}
-                        className="absolute top-3 right-3 z-10 p-2 bg-white/80 backdrop-blur-md text-rose-600 hover:bg-rose-600 hover:text-white rounded-xl transition shadow-md"
-                        title="Supprimer"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
-                    )}
-                    <div className="relative overflow-hidden h-52">
-                      <img src={item.image} alt={item.title} className="w-full h-full object-cover transition duration-500 group-hover:scale-105" />
-                      <span className="absolute top-3 left-3 bg-stone-900/80 backdrop-blur-md text-white text-[10px] uppercase tracking-wider font-bold px-3 py-1 rounded-full">
-                        {item.category}
-                      </span>
-                    </div>
-                    <div className="p-5">
-                      <h4 className="font-serif font-bold text-stone-900">{item.title}</h4>
-                    </div>
+              {gallery.map(item => (
+                <div key={item.id} className="glass-card rounded-3xl overflow-hidden hover-scale group">
+                  <img src={item.image} alt={item.title} className="w-full h-52 object-cover transition duration-500 group-hover:scale-105" />
+                  <div className="p-5">
+                    <h4 className="font-serif font-bold text-stone-900">{item.title}</h4>
                   </div>
-                ))}
-            </div>
-          </div>
-        )}
-
-        {/* RULES VIEW */}
-        {activeTab === 'reglement' && (
-          <div className="max-w-3xl mx-auto space-y-8">
-            <div>
-              <h2 className="font-serif text-3xl font-bold text-stone-900">Règlement Intérieur</h2>
-              <p className="text-stone-500">Charte de déontologie, droits et devoirs des étudiants de la CGE ARSTM</p>
-            </div>
-
-            <div className="bg-white p-8 rounded-3xl border border-stone-200 space-y-6 shadow-sm">
-              <div className="space-y-3">
-                <h3 className="font-serif text-xl font-bold text-orange-600">Article 1 : Adhésion & Esprit de Corps</h3>
-                <p className="text-stone-600 text-sm leading-relaxed">
-                  L'adhésion aux activités de la Conférence des Grandes Écoles implique le respect des règles de camaraderie, d'intégrité et de considération envers l'ensemble des camarades et du corps professoral.
-                </p>
-              </div>
-
-              <div className="space-y-3">
-                <h3 className="font-serif text-xl font-bold text-orange-600">Article 2 : Représentation & Exemplarité</h3>
-                <p className="text-stone-600 text-sm leading-relaxed">
-                  Chaque membre s'engage à véhiculer une image irréprochable de l'ARSTM lors des cérémonies publiques, visites industrielles et forums d'entreprises.
-                </p>
-              </div>
-
-              <div className="pt-4 border-t border-stone-100 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <span className="text-xs text-stone-400 font-medium">Document ratifié en Assemblée Générale Ordinaire</span>
-                <button 
-                  onClick={() => showToastMsg("Téléchargement du règlement intérieur (PDF)...")}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-orange-600 text-white rounded-xl text-sm font-semibold hover:bg-orange-500 transition"
-                >
-                  <Download className="w-4 h-4" />
-                  Télécharger le PDF complet
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* SUGGESTIONS VIEW */}
-        {activeTab === 'suggestions' && (
-          <div className="max-w-2xl mx-auto space-y-8">
-            <div className="text-center space-y-2">
-              <LogoCGE className="w-16 h-16 mx-auto" />
-              <h2 className="font-serif text-3xl font-bold text-stone-900">Boîte à Suggestions Anonyme</h2>
-              <p className="text-stone-500 text-sm">
-                Transmettez directement vos remarques, idées d'activités ou besoins d'amélioration au bureau exécutif.
-              </p>
-            </div>
-
-            <div className="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm space-y-6">
-              <div>
-                <label className="block text-sm font-semibold text-stone-700 mb-2">Votre message ou suggestion</label>
-                <textarea
-                  rows={5}
-                  value={newSuggestion}
-                  onChange={(e) => setNewSuggestion(e.target.value)}
-                  placeholder="Ex : Proposer un tournoi sportif inter-promotions ou un atelier CV maritime..."
-                  className="w-full p-4 rounded-2xl bg-stone-50 border border-stone-200 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 text-stone-800 text-sm"
-                ></textarea>
-              </div>
-
-              <button
-                onClick={async () => {
-                  if (!newSuggestion.trim()) return;
-                  const newSugObj = {
-                    date: new Date().toLocaleDateString('fr-FR'),
-                    text: newSuggestion
-                  };
-
-                  if (supabaseClient) {
-                    const { data, error } = await supabaseClient.from('suggestions').insert([newSugObj]).select();
-                    if (!error && data) setSuggestions([data[0], ...suggestions]);
-                  } else {
-                    setSuggestions([{ id: Date.now(), ...newSugObj }, ...suggestions]);
-                  }
-
-                  setNewSuggestion('');
-                  showToastMsg("Votre suggestion anonyme a bien été enregistrée ! Merci.");
-                }}
-                className="w-full py-4 bg-orange-600 hover:bg-orange-500 text-white rounded-2xl font-semibold transition flex items-center justify-center gap-2"
-              >
-                <Send className="w-5 h-5" />
-                Envoyer ma suggestion anonymement
-              </button>
+                </div>
+              ))}
             </div>
           </div>
         )}
 
         {/* CONTACT VIEW */}
         {activeTab === 'contact' && (
-          <div className="max-w-3xl mx-auto space-y-8">
-            <div>
-              <h2 className="font-serif text-3xl font-bold text-stone-900">Nous Contacter</h2>
-              <p className="text-stone-500">Secrétariat permanent de la Conférence des Grandes Écoles - ARSTM</p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4">
-                <div className="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center">
-                  <MapPin className="w-5 h-5" />
-                </div>
-                <h3 className="font-bold text-stone-900">Adresse Académique</h3>
-                <p className="text-sm text-stone-600 leading-relaxed">
-                  Académie Régionale des Sciences et Techniques de la Mer (ARSTM)<br />
-                  Yopougon Lokoa, Route de Dabou<br />
-                  Abidjan, Côte d'Ivoire
-                </p>
-              </div>
-
-              <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4">
-                <div className="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center">
-                  <Mail className="w-5 h-5" />
-                </div>
-                <h3 className="font-bold text-stone-900">Contacts Électroniques</h3>
-                <p className="text-sm text-stone-600 leading-relaxed">
-                  cge@arstm.ci<br />
-                  bureau.cge@arstm-ci.org
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* MEMBER DASHBOARD VIEW */}
-        {activeTab === 'espace-membre' && currentUser && (
-          <div className="max-w-3xl mx-auto space-y-8">
-            <div className="flex justify-between items-center">
-              <div>
-                <h2 className="font-serif text-3xl font-bold text-stone-900">
-                  {isAdminLoggedIn ? "Zone Administrateur" : "Espace Membre Officiel"}
-                </h2>
-                <p className="text-stone-500">Gestion de votre carte numérique et paramètres de sécurité</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setActiveTab('accueil')}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-50 text-orange-700 border border-orange-200 text-sm font-semibold hover:bg-orange-100 transition"
-                >
-                  <Home className="w-4 h-4" />
-                  Retour à l'accueil
-                </button>
-                <button
-                  onClick={() => {
-                    setCurrentUser(null);
-                    setIsAdminLoggedIn(false);
-                    setActiveTab('accueil');
-                    showToastMsg("Déconnexion réussie.");
-                  }}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-stone-200 text-stone-700 text-sm font-semibold hover:bg-stone-300 transition"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Déconnexion
-                </button>
-              </div>
-            </div>
-
-            {/* Student / Admin ID Card Badge */}
-            <div className="bg-gradient-to-br from-stone-900 via-stone-800 to-stone-900 text-white rounded-3xl p-8 shadow-2xl relative overflow-hidden border border-stone-700">
-              <div className="absolute top-0 right-0 p-8 opacity-10">
-                <LogoCGE className="w-64 h-64" />
-              </div>
-              <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-6">
-                <img src={currentUser.image} alt={currentUser.name} className="w-28 h-28 rounded-2xl object-cover border-2 border-orange-500 shadow-md" />
-                <div className="space-y-2 text-center sm:text-left">
-                  <span className="text-xs font-bold bg-orange-500/20 text-orange-400 border border-orange-500/30 px-3 py-1 rounded-full uppercase tracking-wider">
-                    {isAdminLoggedIn ? "Compte Administrateur" : "Carte d'Étudiant Membre"}
-                  </span>
-                  <h3 className="font-serif text-2xl font-bold">
-                    {isAdminLoggedIn ? "Administrateur" : currentUser.name}
-                  </h3>
-                  <p className="text-orange-400 font-semibold text-sm">{currentUser.role}</p>
-                  <p className="text-xs text-stone-400 font-mono pt-2">Matricule : {currentUser.matricule}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Change PIN Code Form */}
-            {!isAdminLoggedIn && (
-            <div className="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm space-y-6">
-              <h3 className="font-serif text-xl font-bold text-stone-900 flex items-center gap-2">
-                <Key className="w-5 h-5 text-orange-600" />
-                Modifier mon code PIN d'accès
-              </h3>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <input
-                  type="password"
-                  placeholder="Nouveau code PIN (4 à 6 chiffres)"
-                  inputMode="numeric"
-                  maxLength={6}
-                  value={newPinInput}
-                  onChange={(e) => setNewPinInput(e.target.value)}
-                  className="flex-1 px-4 py-3 rounded-2xl bg-stone-50 border border-stone-200 text-stone-900 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-                />
-                <button
-                  onClick={handleUpdatePin}
-                  className="px-6 py-3 bg-orange-600 text-white font-semibold rounded-2xl hover:bg-orange-500 transition"
-                >
-                  Mettre à jour le PIN
-                </button>
-              </div>
-            </div>
-            )}
-          </div>
-        )}
-
-        {/* ADMIN PANEL VIEW */}
-        {activeTab === 'admin-panel' && isAdminLoggedIn && (
-          <div className="space-y-8">
-            <div className="flex justify-between items-center">
-              <div>
-                <h2 className="font-serif text-3xl font-bold text-stone-900">Panneau d'Administration CGE</h2>
-                <p className="text-stone-500">Gestion globale des membres, des suggestions et de l'annuaire</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setActiveTab('accueil')}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-50 text-orange-700 border border-orange-200 text-sm font-semibold hover:bg-orange-100 transition"
-                >
-                  <Home className="w-4 h-4" />
-                  Retour à l'accueil
-                </button>
-                <button
-                  onClick={() => {
-                    setIsAdminLoggedIn(false);
-                    setCurrentUser(null);
-                    setActiveTab('accueil');
-                    showToastMsg("Session d'administration fermée.");
-                  }}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-stone-200 text-stone-700 text-sm font-semibold hover:bg-stone-300 transition"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Quitter Session Admin
-                </button>
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8">
-              {/* Member Reset PIN Section */}
-              <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4">
-                <h3 className="font-serif text-xl font-bold text-stone-900 flex items-center gap-2">
-                  <RefreshCw className="w-5 h-5 text-orange-600" />
-                  Réinitialiser le Code PIN d'un membre
-                </h3>
-                <p className="text-xs text-stone-500">Génère un nouveau code PIN temporaire aléatoire en cas d'oubli.</p>
-                <div className="space-y-3">
-                  {members.map(m => (
-                    <div key={m.id} className="flex justify-between items-center p-3 rounded-2xl bg-stone-50 border border-stone-200">
-                      <div>
-                        <p className="text-sm font-bold text-stone-800">{m.name}</p>
-                        <p className="text-xs text-stone-400">{m.matricule}</p>
-                      </div>
-                      <button
-                        onClick={() => {
-                          setConfirmModal({
-                            title: "Réinitialiser le code PIN",
-                            message: `Générer un nouveau code PIN temporaire pour ${m.name} ?`,
-                            onConfirm: async () => {
-                              const pin = genPin();
-                              const pinHash = await hashSecret(m.matricule, pin);
-                              
-                              if (supabaseClient) {
-                                await supabaseClient.from('members').update({ pinHash }).eq('id', m.id);
-                              }
-
-                              setMembers(prev => prev.map(item => item.id === m.id ? { ...item, pinHash } : item));
-                              setTempPinInfo({ name: m.name, pin });
-                            }
-                          });
-                        }}
-                        className="px-3 py-1.5 bg-stone-200 text-stone-800 rounded-xl text-xs font-semibold hover:bg-orange-100 hover:text-orange-700 transition"
-                      >
-                        Réinitialiser PIN
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Suggestions Admin View */}
-              <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4">
-                <div className="flex justify-between items-center">
-                  <h3 className="font-serif text-xl font-bold text-stone-900 flex items-center gap-2">
-                    <MessageSquare className="w-5 h-5 text-purple-600" />
-                    Suggestions anonymes ({suggestions.length})
-                  </h3>
-                  <button
-                    onClick={() => exportCSV(suggestions, 'suggestions_anonymes_cge')}
-                    className="text-xs text-orange-600 font-semibold hover:underline"
-                  >
-                    Exporter CSV
-                  </button>
-                </div>
-                <div className="space-y-3 max-h-80 overflow-y-auto">
-                  {suggestions.map(s => (
-                    <div key={s.id} className="p-4 rounded-2xl bg-stone-50 border border-stone-200 space-y-2 relative group">
-                      <div className="flex justify-between text-xs text-stone-400">
-                        <span>{s.date}</span>
-                        <button
-                          onClick={() => {
-                            setConfirmModal({
-                              title: "Supprimer la suggestion",
-                              message: "Êtes-vous sûr de vouloir effacer cette suggestion ?",
-                              onConfirm: async () => {
-                                if (supabaseClient) {
-                                  await supabaseClient.from('suggestions').delete().eq('id', s.id);
-                                }
-                                setSuggestions(suggestions.filter(item => item.id !== s.id));
-                                showToastMsg("Suggestion supprimée.");
-                              }
-                            });
-                          }}
-                          className="text-rose-500 hover:text-rose-700"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                      <p className="text-sm text-stone-800 font-medium">{s.text}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Admin photo storage */}
-            <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <h3 className="font-serif text-xl font-bold text-stone-900 flex items-center gap-2">
-                    <ImgIcon className="w-5 h-5 text-orange-600" />
-                    Espace de stockage photos (admins)
-                  </h3>
-                  <p className="text-xs text-stone-500">Ajoutez vos photos ici une seule fois, puis choisissez-les avec le bouton « Mes photos » dans les formulaires.</p>
-                </div>
-                <label className="cursor-pointer px-4 py-2.5 bg-orange-600 text-white rounded-xl text-sm font-semibold hover:bg-orange-500 transition">
-                  {uploading ? "Envoi..." : "Ajouter des photos"}
-                  <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => { uploadPhotos(e.target.files); e.target.value = ''; }} />
-                </label>
-              </div>
-              {photos.length === 0 ? (
-                <p className="text-sm text-stone-400 py-6 text-center">Aucune photo pour le moment.</p>
-              ) : (
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
-                  {photos.map(p => (
-                    <div key={p.id} className="relative group rounded-xl overflow-hidden border border-stone-200">
-                      <img src={p.data} alt={p.name} className="w-full h-24 object-cover" />
-                      <button
-                        onClick={() => setConfirmModal({
-                          title: "Supprimer la photo",
-                          message: `Retirer « ${p.name} » de l'espace de stockage ?`,
-                          onConfirm: async () => { await MediaStore.remove(p.id); setPhotos(prev => prev.filter(x => x.id !== p.id)); showToastMsg("Photo supprimée."); }
-                        })}
-                        className="absolute top-1 right-1 p-1.5 bg-white/90 text-rose-600 rounded-lg shadow hover:bg-rose-600 hover:text-white transition"
-                        title="Supprimer"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <p className="text-[11px] text-stone-400">Ces photos sont enregistrées sur cet appareil et visibles uniquement après connexion admin.</p>
-            </div>
+          <div className="max-w-2xl mx-auto glass-card p-8 rounded-3xl space-y-6">
+            <h2 className="font-serif text-3xl font-bold text-stone-900">Contact</h2>
+            <p className="text-stone-600 text-sm">Secrétariat de la Conférence des Grandes Écoles — ARSTM, Abidjan, Côte d'Ivoire.</p>
           </div>
         )}
 
       </main>
 
-      {/* Login Modal */}
-      {showMemberModal && (
-        <div className="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-8 space-y-6 border border-stone-200 shadow-2xl">
-            <div className="text-center space-y-2">
-              <LogoCGE className="w-14 h-14 mx-auto" />
-              <h3 className="font-serif text-2xl font-bold text-stone-900">Espace Membre Etudiant</h3>
-              <p className="text-xs text-stone-500">Connectez-vous à l'aide de votre Matricule et Code PIN</p>
-            </div>
+      {/* BARRE EN BAS : APPLE LIQUID GLASS DOCK */}
+      <div className="fixed bottom-6 inset-x-0 z-40 flex justify-center px-4 pointer-events-none">
+        <nav
+          ref={navRef}
+          onMouseLeave={() => setHoveredTab(null)}
+          className="pointer-events-auto relative glass-dock p-2 rounded-full flex items-center gap-1 max-w-full overflow-x-auto no-scrollbar"
+        >
+          {/* Pilule suiveuse (Apple Liquid Indicator) */}
+          <div
+            className="absolute top-2 bottom-2 liquid-pill rounded-full pointer-events-none"
+            style={{
+              left: `${pillStyle.left}px`,
+              width: `${pillStyle.width}px`,
+              opacity: pillStyle.opacity,
+            }}
+          />
 
-            <form onSubmit={handleMemberLogin} className="space-y-4" autoComplete="off">
-              <div>
-                <label className="block text-xs font-semibold text-stone-600 mb-1">Matricule Unique</label>
-                <input
-                  type="text"
-                  placeholder="Ex: 2026-ARSTM-01"
-                  value={memberMatriculeInput}
-                  onChange={(e) => setMemberMatriculeInput(e.target.value)}
-                  className="w-full px-4 py-3 rounded-2xl bg-stone-50 border border-stone-200 text-stone-900 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-stone-600 mb-1">Code PIN</label>
-                <input
-                  type="password"
-                  placeholder="Votre code PIN"
-                  value={memberPinInput}
-                  onChange={(e) => setMemberPinInput(e.target.value)}
-                  className="w-full px-4 py-3 rounded-2xl bg-stone-50 border border-stone-200 text-stone-900 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-                />
-              </div>
-
-              <div className="flex gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowMemberModal(false)}
-                  className="flex-1 py-3 rounded-xl bg-stone-100 text-stone-700 font-semibold hover:bg-stone-200 transition text-sm"
-                >
-                  Annuler
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 py-3 rounded-xl bg-orange-600 text-white font-semibold hover:bg-orange-500 transition text-sm shadow-md shadow-orange-600/20"
-                >
-                  Connexion
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Temporary PIN Modal */}
-      {tempPinInfo && (
-        <div className="fixed inset-0 z-[60] bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-sm w-full p-8 space-y-5 border border-stone-200 shadow-2xl text-center">
-            <Key className="w-8 h-8 mx-auto text-orange-600" />
-            <h3 className="font-serif text-xl font-bold text-stone-900">Code PIN temporaire</h3>
-            <p className="text-sm text-stone-600">Code de <strong>{tempPinInfo.name}</strong> :</p>
-            <p className="text-4xl font-mono font-bold tracking-widest text-stone-900">{tempPinInfo.pin}</p>
-            <p className="text-xs text-stone-500">Notez-le maintenant et donnez-le au membre en main propre. Il ne sera plus jamais affiché. Le membre doit le changer dès sa première connexion.</p>
-            <button
-              onClick={() => setTempPinInfo(null)}
-              className="w-full py-3 rounded-xl bg-orange-600 text-white font-semibold hover:bg-orange-500 transition text-sm"
-            >
-              J'ai noté le code
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Photo picker modal */}
-      {picker && isAdminLoggedIn && (
-        <div className="fixed inset-0 z-[55] bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[85vh] flex flex-col border border-stone-200 shadow-2xl">
-            <div className="p-6 flex items-center justify-between gap-3 border-b border-stone-100">
-              <h3 className="font-serif text-xl font-bold text-stone-900">Choisir une photo</h3>
-              <div className="flex items-center gap-2">
-                <label className="cursor-pointer px-4 py-2 bg-orange-600 text-white rounded-xl text-xs font-semibold hover:bg-orange-500 transition">
-                  {uploading ? "Envoi..." : "Depuis mon appareil"}
-                  <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
-                    const added = await uploadPhotos(e.target.files);
-                    e.target.value = '';
-                    if (added.length === 1) { picker.onPick(added[0].data); setPicker(null); }
-                  }} />
-                </label>
-                <button onClick={() => setPicker(null)} className="p-2 rounded-xl bg-stone-100 text-stone-600 hover:bg-stone-200"><X className="w-4 h-4" /></button>
-              </div>
-            </div>
-            <div className="p-6 overflow-y-auto">
-              {photos.length === 0 ? (
-                <p className="text-sm text-stone-400 text-center py-10">Aucune photo. Utilisez « Depuis mon appareil » pour en ajouter.</p>
-              ) : (
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                  {photos.map(p => (
-                    <button key={p.id} onClick={() => { picker.onPick(p.data); setPicker(null); }} className="rounded-xl overflow-hidden border-2 border-transparent hover:border-orange-500 transition">
-                      <img src={p.data} alt={p.name} className="w-full h-24 object-cover" />
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Footer */}
-      <footer className="bg-stone-900 text-white border-t border-stone-800 py-12 mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
-          <div className="flex items-center gap-3">
-            <LogoCGE className="w-10 h-10" />
-            <div>
-              <h4 className="font-serif font-bold text-lg">Conférence des Grandes Écoles</h4>
-              <p className="text-xs text-stone-400">Académie Régionale des Sciences et Techniques de la Mer</p>
-            </div>
-          </div>
-          <p className="text-xs text-stone-500">
-            &copy; 2026 CGE ARSTM. Tous droits réservés.
-          </p>
-        </div>
-      </footer>
+          {navItems.map(item => {
+            const Icon = item.icon;
+            const isActive = activeTab === item.id;
+            return (
+              <button
+                key={item.id}
+                data-tab={item.id}
+                onClick={() => setActiveTab(item.id)}
+                onMouseEnter={() => setHoveredTab(item.id)}
+                className={`relative z-10 flex items-center gap-2 px-4 py-3 rounded-full text-xs font-bold transition-transform duration-300 transform hover:scale-110 active:scale-95 whitespace-nowrap ${
+                  isActive || hoveredTab === item.id ? 'text-white' : 'text-stone-700 hover:text-stone-950'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span className="hidden sm:inline">{item.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+      </div>
 
     </div>
   );
