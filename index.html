@@ -71,7 +71,7 @@
   .animate-bounce { animation: gentle-bounce 1.4s ease-in-out infinite; }
 </style>
 </head>
-<body className="pb-32">
+<body class="pb-32">
 <div id="root"></div>
 <script type="text/babel" data-presets="react">
 const { useState, useEffect, useRef } = React;
@@ -92,27 +92,16 @@ const Briefcase = (p) => <Icon {...p}><rect x="3" y="7.5" width="18" height="12"
 const Calendar = (p) => <Icon {...p}><rect x="3.5" y="5" width="17" height="16" rx="2" /><path d="M8 3v4M16 3v4M3.5 10h17" /></Icon>;
 const GraduationCap = (p) => <Icon {...p}><path d="M2 8.5 12 4l10 4.5-10 4.5-10-4.5Z" /><path d="M6 11v5c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-5" /><path d="M21 9v6" /></Icon>;
 const ImgIcon = (p) => <Icon {...p}><rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="9" cy="10" r="1.8" /><path d="M4 18l5.5-5.5a2 2 0 0 1 2.8 0L20 20" /></Icon>;
-const FileText = (p) => <Icon {...p}><path d="M7 3h7l5 5v13H7Z" /><path d="M14 3v5h5" /><path d="M9.5 13h6M9.5 16.5h6" /></Icon>;
-const MessageSquare = (p) => <Icon {...p}><path d="M4 4h16v12H8l-4 4Z" /></Icon>;
 const Mail = (p) => <Icon {...p}><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3.5 6.5 12 13l8.5-6.5" /></Icon>;
 const UserCheck = (p) => <Icon {...p}><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6" /><path d="M16.5 12.5 18.5 14.5 22 10.5" /></Icon>;
-const ShieldCheck = (p) => <Icon {...p}><path d="M12 3l7 3v6c0 4.8-3 8-7 9-4-1-7-4.2-7-9V6Z" /><path d="M9 12l2 2 4-4.5" /></Icon>;
-const Search = (p) => <Icon {...p}><circle cx="10.5" cy="10.5" r="6.5" /><path d="M20 20l-4.8-4.8" /></Icon>;
-const Download = (p) => <Icon {...p}><path d="M12 3v12" /><path d="M7 10l5 5 5-5" /><path d="M4 20h16" /></Icon>;
-const Trash2 = (p) => <Icon {...p}><path d="M4 7h16" /><path d="M9 7V4.5h6V7" /><path d="M6 7l1 13h10l1-13" /><path d="M10 11v6M14 11v6" /></Icon>;
 const CheckCircle = (p) => <Icon {...p}><circle cx="12" cy="12" r="9" /><path d="M8 12.5l2.5 2.5L16 9.5" /></Icon>;
 const X = (p) => <Icon {...p}><path d="M5 5l14 14M19 5 5 19" /></Icon>;
-const ChevronRight = (p) => <Icon {...p}><path d="M9 5l7 7-7 7" /></Icon>;
 const Heart = (p) => <Icon {...p}><path d="M12 20.5s-7.5-4.7-9.7-9.3C.7 7.7 2.4 4.5 5.6 4c2-.3 3.7.7 4.4 2 .7-1.3 2.4-2.3 4.4-2 3.2.5 4.9 3.7 3.3 7.2C19.5 15.8 12 20.5 12 20.5Z" /></Icon>;
 const Key = (p) => <Icon {...p}><circle cx="8" cy="8" r="4" /><path d="M11 11l9 9" /><path d="M15.5 15.5l2.5-2.5M18.5 18.5l2-2" /></Icon>;
 const Building = (p) => <Icon {...p}><rect x="5" y="3" width="14" height="18" rx="1" /><path d="M9 7h1.5M13.5 7H15M9 11h1.5M13.5 11H15M9 15h1.5M13.5 15H15" /><path d="M10.5 21v-3h3v3" /></Icon>;
-const MapPin = (p) => <Icon {...p}><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21Z" /><circle cx="12" cy="9.5" r="2.3" /></Icon>;
-const Send = (p) => <Icon {...p}><path d="M4 11l16-7-6.5 16-2.8-6.7L4 11Z" /></Icon>;
 const LogOut = (p) => <Icon {...p}><path d="M9 4H5.5A1.5 1.5 0 0 0 4 5.5v13A1.5 1.5 0 0 0 5.5 20H9" /><path d="M14 16l4-4-4-4" /><path d="M18 12H9" /></Icon>;
-const RefreshCw = (p) => <Icon {...p}><path d="M4 11a8 8 0 0 1 14-4.5L21 9" /><path d="M21 4v5h-5" /><path d="M20 13a8 8 0 0 1-14 4.5L3 15" /><path d="M3 20v-5h5" /></Icon>;
 const Sparkles = (p) => <Icon {...p}><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6Z" /><path d="M19 15l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7Z" /></Icon>;
 const Image = ImgIcon;
-const PlusCircle = (p) => <Icon {...p}><circle cx="12" cy="12" r="9" /><path d="M12 8v8M8 12h8" /></Icon>;
 
 const LogoCGE = ({ className = "w-10 h-10" }) => (
   <svg className={className} viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -135,12 +124,10 @@ const hashSecret = async (id, secret) => {
   const buf = await crypto.subtle.digest("SHA-256", data);
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
 };
-const genPin = () => String(crypto.getRandomValues(new Uint32Array(1))[0] % 9000 + 1000);
-const WEAK_PINS = ["1234", "4321", "0123", "12345", "123456", "0000", "1111", "2222", "3333", "4444", "5555", "6666", "7777", "8888", "9999"];
 
 const ADMIN_ACCOUNTS = [
-  { login: "ARSTM-BUR-07", name: "Administrateur principal", hash: "2b0222a77e574b9886a0a6501d76ab71ecd228dfac0e74e2f7a4e8f15e4488df" },
-  { login: "ARSTM-BUR-12", name: "Administrateur adjoint", hash: "f68af661f19d260c6173cb44acbe4485d42d394d72ca695e485d82ad8a1d250d" }
+  { login: "ARSTM-BUR-07", name: "Administrateur principal", hash: "2506fda50c10c787058c9b0d52cf9503fa50e4ddc83624910725e08224371ad2" },
+  { login: "ARSTM-BUR-12", name: "Administrateur adjoint", hash: "ffac76402ec97103233eb4f3ec11b51688eaeb3801ea187b5bc6852bb2d744b0" }
 ];
 
 const initialMembers = [
@@ -184,7 +171,7 @@ function App() {
   const [memberPinInput, setMemberPinInput] = useState('');
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [lockUntil, setLockUntil] = useState(0);
-  const [tempPinInfo, setTempPinInfo] = useState(null);
+  const [isCheckingLogin, setIsCheckingLogin] = useState(false);
 
   // Pillar animation positioning ref
   const navRef = useRef(null);
@@ -196,25 +183,22 @@ function App() {
   const [jobs, setJobs] = useState(initialJobs);
   const [alumni, setAlumni] = useState(initialAlumni);
   const [gallery, setGallery] = useState(initialGallery);
-  const [suggestions, setSuggestions] = useState([
-    { id: 1, date: "20/09/2026", text: "Organiser une journée portes ouvertes pour le mentorat des nouveaux étudiants." }
-  ]);
 
-  // General Inputs
-  const [newSuggestion, setNewSuggestion] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('Tous');
-  const [confirmModal, setConfirmModal] = useState(null);
+  // Génération dynamique des éléments de navigation selon le statut de connexion
+  const isUserAuthenticated = currentUser !== null || isAdminLoggedIn;
 
-  const navItems = [
+  const baseNavItems = [
     { id: 'accueil', label: 'Accueil', icon: Home },
     { id: 'bureau', label: 'Membres', icon: Users },
-    { id: 'emplois', label: 'Emplois & Stages', icon: Briefcase },
+    { id: 'emplois', label: 'Emplois & Stages', icon: Briefcase, protected: true },
     { id: 'activites', label: 'Activités', icon: Calendar },
     { id: 'alumni', label: 'Alumni', icon: GraduationCap },
     { id: 'mediatheque', label: 'Médiathèque', icon: Image },
     { id: 'contact', label: 'Contact', icon: Mail },
   ];
+
+  // Filtrage des éléments pour n'afficher la section d'offres d'emploi qu'une fois connecté
+  const navItems = baseNavItems.filter(item => !item.protected || isUserAuthenticated);
 
   const showToastMsg = (msg) => {
     setToast(msg);
@@ -232,8 +216,75 @@ function App() {
         width: targetEl.offsetWidth,
         opacity: 1
       });
+    } else {
+      setPillStyle(prev => ({ ...prev, opacity: 0 }));
     }
-  }, [activeTab, hoveredTab]);
+  }, [activeTab, hoveredTab, isUserAuthenticated]);
+
+  const closeMemberModal = () => {
+    setShowMemberModal(false);
+    setMemberMatriculeInput('');
+    setMemberPinInput('');
+  };
+
+  // Connexion (membre ou administrateur)
+  const handleMemberLogin = async () => {
+    if (lockUntil > Date.now()) return;
+    const id = memberMatriculeInput.trim();
+    const secret = memberPinInput.trim();
+    if (!id || !secret) {
+      showToastMsg("Veuillez renseigner l'identifiant et le code.");
+      return;
+    }
+
+    setIsCheckingLogin(true);
+    try {
+      const admin = ADMIN_ACCOUNTS.find(a => a.login.toLowerCase() === id.toLowerCase());
+      if (admin) {
+        const h = await hashSecret(admin.login, secret);
+        if (h === admin.hash) {
+          setIsAdminLoggedIn(true);
+          setCurrentUser({ name: admin.name });
+          setFailedAttempts(0);
+          closeMemberModal();
+          showToastMsg(`Bienvenue, ${admin.name}`);
+          return;
+        }
+      } else {
+        const member = members.find(m => m.matricule.toLowerCase() === id.toLowerCase());
+        if (member) {
+          const h = await hashSecret(member.matricule, secret);
+          if (h === member.pinHash) {
+            setIsAdminLoggedIn(false);
+            setCurrentUser(member);
+            setFailedAttempts(0);
+            closeMemberModal();
+            showToastMsg(`Bienvenue, ${member.name.split(' ')[0]}`);
+            return;
+          }
+        }
+      }
+
+      const attempts = failedAttempts + 1;
+      setFailedAttempts(attempts);
+      if (attempts >= 5) {
+        setLockUntil(Date.now() + 30000);
+        setFailedAttempts(0);
+        showToastMsg("Trop de tentatives. Réessayez dans 30 secondes.");
+      } else {
+        showToastMsg("Identifiant ou code incorrect.");
+      }
+    } finally {
+      setIsCheckingLogin(false);
+    }
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setIsAdminLoggedIn(false);
+    setActiveTab('accueil');
+    showToastMsg("Déconnexion réussie.");
+  };
 
   return (
     <div className="min-h-screen flex flex-col text-stone-800 font-sans antialiased selection:bg-orange-500 selection:text-white">
@@ -246,7 +297,68 @@ function App() {
         </div>
       )}
 
-      {/* Header Minimaliste en haut */}
+      {/* MODALE ESPACE MEMBRE */}
+      {showMemberModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/40 backdrop-blur-sm p-4"
+          onClick={closeMemberModal}
+        >
+          <div
+            className="glass-card w-full max-w-sm rounded-3xl p-8 space-y-5 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={closeMemberModal}
+              className="absolute top-5 right-5 text-stone-400 hover:text-stone-700"
+              aria-label="Fermer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="space-y-1">
+              <div className="w-11 h-11 rounded-2xl bg-orange-500/15 border border-orange-500/25 flex items-center justify-center">
+                <Key className="w-5 h-5 text-orange-600" />
+              </div>
+              <h3 className="font-serif text-xl font-bold text-stone-900 pt-2">Espace Membre</h3>
+              <p className="text-xs text-stone-500">Connectez-vous pour débloquer l'accès aux offres d'emplois & stages.</p>
+            </div>
+
+            <div className="space-y-3">
+              <input
+                type="text"
+                autoFocus
+                placeholder="Matricule / Identifiant"
+                value={memberMatriculeInput}
+                onChange={(e) => setMemberMatriculeInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleMemberLogin()}
+                className="w-full px-4 py-3 rounded-2xl bg-white/70 border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+              <input
+                type="password"
+                placeholder="Code PIN / Mot de passe"
+                value={memberPinInput}
+                onChange={(e) => setMemberPinInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleMemberLogin()}
+                className="w-full px-4 py-3 rounded-2xl bg-white/70 border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+            </div>
+
+            {lockUntil > Date.now() ? (
+              <p className="text-xs font-semibold text-rose-600 text-center">Trop de tentatives, réessayez dans un instant.</p>
+            ) : (
+              <button
+                onClick={handleMemberLogin}
+                disabled={isCheckingLogin}
+                className="hover-scale w-full py-3 rounded-2xl bg-orange-600 text-white font-semibold shadow-lg shadow-orange-600/30 disabled:opacity-60"
+              >
+                {isCheckingLogin ? "Vérification..." : "Se connecter"}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Header Minimaliste */}
       <header className="sticky top-0 z-30 pt-4 px-4 sm:px-8">
         <div className="max-w-7xl mx-auto glass-card rounded-3xl px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3 cursor-pointer group hover-scale" onClick={() => setActiveTab('accueil')}>
@@ -298,6 +410,14 @@ function App() {
                 <p className="text-stone-600 text-base sm:text-lg leading-relaxed">
                   L'espace communautaire interactif dédié à la cohésion, aux opportunités de carrière et au rayonnement des élèves officiers et ingénieurs.
                 </p>
+                {!isUserAuthenticated && (
+                  <button
+                    onClick={() => setShowMemberModal(true)}
+                    className="hover-scale inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-orange-600 text-white font-semibold shadow-lg shadow-orange-600/30 text-sm"
+                  >
+                    <Key className="w-4 h-4" /> Connectez-vous pour voir les opportunités
+                  </button>
+                )}
               </div>
             </div>
 
@@ -346,29 +466,40 @@ function App() {
           </div>
         )}
 
-        {/* EMPLOIS & STAGES VIEW */}
+        {/* EMPLOIS & STAGES VIEW (PROTECTED SECTION) */}
         {activeTab === 'emplois' && (
-          <div className="space-y-8">
-            <div>
-              <h2 className="font-serif text-3xl font-bold text-stone-900">Offres d'Emplois & Stages</h2>
-              <p className="text-stone-500">Opportunités professionnelles maritimes et industrielles</p>
-            </div>
-            <div className="space-y-4">
-              {jobs.map(j => (
-                <div key={j.id} className="glass-card p-6 rounded-3xl hover-scale flex flex-col md:flex-row md:items-center justify-between gap-6">
-                  <div className="space-y-2">
-                    <span className="text-xs font-bold text-emerald-700 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">{j.type}</span>
-                    <h3 className="font-serif text-xl font-bold text-stone-900">{j.title}</h3>
-                    <p className="text-sm font-semibold text-stone-600 flex items-center gap-2"><Building className="w-4 h-4 text-orange-600" /> {j.company}</p>
-                    <p className="text-stone-600 text-sm">{j.desc}</p>
+          isUserAuthenticated ? (
+            <div className="space-y-8">
+              <div>
+                <h2 className="font-serif text-3xl font-bold text-stone-900">Offres d'Emplois & Stages</h2>
+                <p className="text-stone-500">Espace réservé — Opportunités professionnelles maritimes et industrielles</p>
+              </div>
+              <div className="space-y-4">
+                {jobs.map(j => (
+                  <div key={j.id} className="glass-card p-6 rounded-3xl hover-scale flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="space-y-2">
+                      <span className="text-xs font-bold text-emerald-700 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">{j.type}</span>
+                      <h3 className="font-serif text-xl font-bold text-stone-900">{j.title}</h3>
+                      <p className="text-sm font-semibold text-stone-600 flex items-center gap-2"><Building className="w-4 h-4 text-orange-600" /> {j.company}</p>
+                      <p className="text-stone-600 text-sm">{j.desc}</p>
+                    </div>
+                    <button onClick={() => showToastMsg("Candidature transmise avec succès !")} className="hover-scale px-6 py-3 rounded-2xl bg-orange-600 text-white font-semibold shadow-lg shadow-orange-600/30 whitespace-nowrap">
+                      Postuler
+                    </button>
                   </div>
-                  <button onClick={() => showToastMsg("Candidature transmise avec succès !")} className="hover-scale px-6 py-3 rounded-2xl bg-orange-600 text-white font-semibold shadow-lg shadow-orange-600/30 whitespace-nowrap">
-                    Postuler
-                  </button>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="max-w-md mx-auto glass-card p-8 rounded-3xl text-center space-y-4">
+              <Key className="w-12 h-12 mx-auto text-orange-600" />
+              <h3 className="font-serif text-xl font-bold">Espace Réservé</h3>
+              <p className="text-stone-600 text-sm">Vous devez vous connecter à votre espace membre pour consulter les offres d'emploi et de stage.</p>
+              <button onClick={() => setShowMemberModal(true)} className="hover-scale px-6 py-3 rounded-2xl bg-orange-600 text-white font-semibold shadow-lg shadow-orange-600/30">
+                Se connecter
+              </button>
+            </div>
+          )
         )}
 
         {/* ACTIVITES VIEW */}
@@ -424,6 +555,32 @@ function App() {
           <div className="max-w-2xl mx-auto glass-card p-8 rounded-3xl space-y-6">
             <h2 className="font-serif text-3xl font-bold text-stone-900">Contact</h2>
             <p className="text-stone-600 text-sm">Secrétariat de la Conférence des Grandes Écoles — ARSTM, Abidjan, Côte d'Ivoire.</p>
+          </div>
+        )}
+
+        {/* ESPACE MEMBRE VIEW */}
+        {activeTab === 'espace-membre' && currentUser && (
+          <div className="max-w-xl mx-auto glass-card p-8 rounded-3xl text-center space-y-6">
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-orange-500/15 border border-orange-500/25 flex items-center justify-center">
+              <UserCheck className="w-8 h-8 text-orange-600" />
+            </div>
+            <div>
+              <h2 className="font-serif text-2xl font-bold text-stone-900">
+                {isAdminLoggedIn ? currentUser.name : `Bonjour, ${currentUser.name}`}
+              </h2>
+              {!isAdminLoggedIn && (
+                <p className="text-stone-500 text-sm mt-1">{currentUser.role} — {currentUser.matricule}</p>
+              )}
+              {isAdminLoggedIn && (
+                <p className="text-stone-500 text-sm mt-1">Accès administrateur</p>
+              )}
+            </div>
+            <button
+              onClick={handleLogout}
+              className="hover-scale inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-stone-900 text-white font-semibold"
+            >
+              <LogOut className="w-4 h-4" /> Se déconnecter
+            </button>
           </div>
         )}
 
